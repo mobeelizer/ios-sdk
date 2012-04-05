@@ -108,7 +108,6 @@
 		C82A4D90150653AE00D7B591 /* MobeelizerFileManager.m in Sources */ = {isa = PBXBuildFile; fileRef = C82A4D8E150653AD00D7B591 /* MobeelizerFileManager.m */; };
 		C832245E152C6D050077DD22 /* MobeelizerDataFileManager.h in Headers */ = {isa = PBXBuildFile; fileRef = C832245C152C6D050077DD22 /* MobeelizerDataFileManager.h */; };
 		C832245F152C6D050077DD22 /* MobeelizerDataFileManager.m in Sources */ = {isa = PBXBuildFile; fileRef = C832245D152C6D050077DD22 /* MobeelizerDataFileManager.m */; };
-		C8322461152C6D0D0077DD22 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = C8322460152C6D0D0077DD22 /* README.md */; };
 		C832246C152C6D300077DD22 /* FileInZipInfo.h in Headers */ = {isa = PBXBuildFile; fileRef = C8322462152C6D300077DD22 /* FileInZipInfo.h */; };
 		C832246D152C6D300077DD22 /* FileInZipInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = C8322463152C6D300077DD22 /* FileInZipInfo.m */; };
 		C832246E152C6D300077DD22 /* ZipException.h in Headers */ = {isa = PBXBuildFile; fileRef = C8322464152C6D300077DD22 /* ZipException.h */; };
@@ -150,7 +149,6 @@
 		C83224B1152C6D540077DD22 /* unzip.h in Headers */ = {isa = PBXBuildFile; fileRef = C83224A8152C6D540077DD22 /* unzip.h */; };
 		C83224B2152C6D540077DD22 /* zip.c in Sources */ = {isa = PBXBuildFile; fileRef = C83224A9152C6D540077DD22 /* zip.c */; };
 		C83224B3152C6D540077DD22 /* zip.h in Headers */ = {isa = PBXBuildFile; fileRef = C83224AA152C6D540077DD22 /* zip.h */; };
-		C83224B9152C8EA30077DD22 /* s3upload.pl in Resources */ = {isa = PBXBuildFile; fileRef = C83224B8152C8EA30077DD22 /* s3upload.pl */; };
 		C83224C0152D92E60077DD22 /* MobeelizerSyncManager.h in Headers */ = {isa = PBXBuildFile; fileRef = C83224BE152D92E50077DD22 /* MobeelizerSyncManager.h */; };
 		C83224C1152D92E60077DD22 /* MobeelizerSyncManager.m in Sources */ = {isa = PBXBuildFile; fileRef = C83224BF152D92E60077DD22 /* MobeelizerSyncManager.m */; };
 		C85976FB150A11C300221946 /* MobeelizerNotRestrition.h in Headers */ = {isa = PBXBuildFile; fileRef = C85976F9150A11C300221946 /* MobeelizerNotRestrition.h */; };
@@ -861,8 +859,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				C82A4C40150101F900D7B591 /* InfoPlist.strings in Resources */,
-				C8322461152C6D0D0077DD22 /* README.md in Resources */,
-				C83224B9152C8EA30077DD22 /* s3upload.pl in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
