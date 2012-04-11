@@ -6,7 +6,7 @@ Both [docset feed](http://sdk.mobeelizer.com/mobeelizer-ios-sdk.atom) and [onlin
 
 Please visit the [Mobeelizer site](http://www.mobeelizer.com/) to get more informations.
 
-Ready-to-use version of the Mobeelizer SDK framework is deployed at [http://sdk.mobeelizer.com/mobeelizer-ios-sdk.zip](http://sdk.mobeelizer.com/mobeelizer-ios-sdk.zip).
+Ready-to-use version of the Mobeelizer SDK framework is deployed at [http://sdk.mobeelizer.com/mobeelizer-ios-sdk.framework.zip](http://sdk.mobeelizer.com/mobeelizer-ios-sdk.framework.zip).
 
 # Copyright
 
