@@ -93,6 +93,7 @@
         BOOL syncRequestCompleteSuccess = [self.mobeelizer.connectionManager waitUntilSyncRequestComplete:ticket];
         
         if (!syncRequestCompleteSuccess) {
+            [self updateSyncStatus:MobeelizerSyncStatusFinishedWithFailure];
             return MobeelizerSyncStatusFinishedWithFailure;
         }
         
@@ -107,6 +108,7 @@
         BOOL processInputFileSuccess = [self.dataFileManager processInputFile:inputDataPath andSyncAll:all];
 
         if (!processInputFileSuccess) {
+            [self updateSyncStatus:MobeelizerSyncStatusFinishedWithFailure];
             return MobeelizerSyncStatusFinishedWithFailure;
         }
             
@@ -117,10 +119,12 @@
         [self.mobeelizer.internalDatabase setInitialSyncAsNotRequiredForInstance:self.mobeelizer.instance andUser:self.mobeelizer.user];
     
         [self updateSyncStatus:MobeelizerSyncStatusFinishedWithSuccess];
-
+        
         return MobeelizerSyncStatusFinishedWithSuccess;
     } @catch (NSException *exception) {
-        @throw exception;
+        MobeelizerLog(@"Exception while sync: %@", [exception reason]);
+        [self updateSyncStatus:MobeelizerSyncStatusFinishedWithFailure];
+        return MobeelizerSyncStatusFinishedWithFailure;
     } @finally {        
         NSError *error;
         
@@ -138,7 +142,7 @@
             MobeelizerLog(@"Sync process complete with failure.");
             [self updateSyncStatus:MobeelizerSyncStatusFinishedWithFailure];
         }
-    }    
+    }
 }
 
 - (void)registerSyncStatusListener:(id<MobeelizerSyncListener>)listener {
