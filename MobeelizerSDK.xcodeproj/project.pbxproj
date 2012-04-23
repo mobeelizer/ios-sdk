@@ -942,7 +942,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/bash;
-			shellScript = "cd \"${BUILD_DIR}/Docs/com.mobeelizer.MobeelizerSDK.docset/Contents/Resources/Documents\";\n\nfor file in * ; do\nperl ${PROJECT_DIR}/Scripts/s3upload.pl --id mobeelizer --acl \"public-read\" --contentType \"text/html\" --put \"${BUILD_DIR}/Docs/com.mobeelizer.MobeelizerSDK.docset/Contents/Resources/Documents/$file\" -- \"${AMAZON_BUCKET}/ios/$file\";\ndone\n\nfor file in Classes/* ; do\nperl ${PROJECT_DIR}/Scripts/s3upload.pl --id mobeelizer --acl \"public-read\" --contentType \"text/html\" --put \"${BUILD_DIR}/Docs/com.mobeelizer.MobeelizerSDK.docset/Contents/Resources/Documents/$file\" -- \"${AMAZON_BUCKET}/ios/$file\";\ndone\n\nfor file in Protocols/* ; do\nperl ${PROJECT_DIR}/Scripts/s3upload.pl --id mobeelizer --acl \"public-read\" --contentType \"text/html\" --put \"${BUILD_DIR}/Docs/com.mobeelizer.MobeelizerSDK.docset/Contents/Resources/Documents/$file\" -- \"${AMAZON_BUCKET}/ios/$file\";\ndone\n\nfor file in css/* ; do\nperl ${PROJECT_DIR}/Scripts/s3upload.pl --id mobeelizer --acl \"public-read\" --contentType \"text/css\" --put \"${BUILD_DIR}/Docs/com.mobeelizer.MobeelizerSDK.docset/Contents/Resources/Documents/$file\" -- \"${AMAZON_BUCKET}/ios/$file\";\ndone\n                    \nfor file in img/* ; do\nperl ${PROJECT_DIR}/Scripts/s3upload.pl --id mobeelizer --acl \"public-read\" --contentType \"image/png\" --put \"${BUILD_DIR}/Docs/com.mobeelizer.MobeelizerSDK.docset/Contents/Resources/Documents/$file\" -- \"${AMAZON_BUCKET}/ios/$file\";\ndone";
+			shellScript = "cd \"${BUILD_DIR}/Docs/com.mobeelizer.MobeelizerSDK.docset/Contents/Resources/Documents\";\n\nfor file in * ; do\nperl ${PROJECT_DIR}/Scripts/s3upload.pl --id mobeelizer --acl \"public-read\" --contentType \"text/html\" --put \"${BUILD_DIR}/Docs/com.mobeelizer.MobeelizerSDK.docset/Contents/Resources/Documents/$file\" -- \"${AMAZON_BUCKET}/ios/$file\";\ndone\n\nfor file in Classes/* ; do\n                    perl ${PROJECT_DIR}/Scripts/s3upload.pl --id mobeelizer --acl \"public-read\" --contentType \"text/html\" --put \"${BUILD_DIR}/Docs/com.mobeelizer.MobeelizerSDK.docset/Contents/Resources/Documents/$file\" -- \"${AMAZON_BUCKET}/ios/$file\";\n                    done\n                    \n                    for file in Protocols/* ; do\n                    perl ${PROJECT_DIR}/Scripts/s3upload.pl --id mobeelizer --acl \"public-read\" --contentType \"text/html\" --put \"${BUILD_DIR}/Docs/com.mobeelizer.MobeelizerSDK.docset/Contents/Resources/Documents/$file\" -- \"${AMAZON_BUCKET}/ios/$file\";\n                    done\n                    \n                    for file in css/* ; do\n                    perl ${PROJECT_DIR}/Scripts/s3upload.pl --id mobeelizer --acl \"public-read\" --contentType \"text/css\" --put \"${BUILD_DIR}/Docs/com.mobeelizer.MobeelizerSDK.docset/Contents/Resources/Documents/$file\" -- \"${AMAZON_BUCKET}/ios/$file\";\n                    done\n                    \n                    for file in img/* ; do\n                    perl ${PROJECT_DIR}/Scripts/s3upload.pl --id mobeelizer --acl \"public-read\" --contentType \"image/png\" --put \"${BUILD_DIR}/Docs/com.mobeelizer.MobeelizerSDK.docset/Contents/Resources/Documents/$file\" -- \"${AMAZON_BUCKET}/ios/$file\";\n                    done";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -1121,6 +1121,7 @@
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
 					"$(inherited)",
+					"SDK_VERSION=@\\\"${FRAMEWORK_VERSION}\\\"",
 				);
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
@@ -1146,6 +1147,7 @@
 				COPY_PHASE_STRIP = YES;
 				FRAMEWORK_VERSION = 1.0;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_PREPROCESSOR_DEFINITIONS = "SDK_VERSION=@\\\"${FRAMEWORK_VERSION}\\\"";
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;

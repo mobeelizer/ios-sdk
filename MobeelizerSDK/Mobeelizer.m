@@ -72,11 +72,15 @@
 
 static Mobeelizer *mobeelizer = nil;
 
++ (NSString*)version {
+    return SDK_VERSION;
+}
+
 - (id)init {  
     if (self = [super init]) {
         _multitaskingSupported = [self isMultitaskingSupported];
         
-        MobeelizerLog(@"Create");
+        MobeelizerLog(@"Creating Mobeelizer SDK %@", [Mobeelizer version]);
         
         NSDictionary *meta = [NSDictionary dictionaryWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"Mobeelizer" ofType:@"plist"]];
         

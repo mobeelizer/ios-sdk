@@ -371,6 +371,8 @@
     [request setValue:self.user forHTTPHeaderField:@"mas-user-name"];
     [request setValue:self.password forHTTPHeaderField:@"mas-user-password"];
     [request setValue:self.instance forHTTPHeaderField:@"mas-application-instance-name"];
+    [request setValue:[NSString stringWithFormat:@"ios-sdk-%@", [Mobeelizer version]] forHTTPHeaderField:@"mas-sdk-version"];
+    
     [request setValue:@"application/json" forHTTPHeaderField:@"content-type"];
     
     [request setHTTPMethod:method];
