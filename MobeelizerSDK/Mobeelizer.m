@@ -62,6 +62,8 @@
 - (MobeelizerFile *)createFile:(NSString *)name withGuid:(NSString *)guid;
 - (void)registerSyncStatusListener:(id<MobeelizerSyncListener>)listener;
 - (BOOL)isMultitaskingSupported;
+- (void)sendRemoteNotification:(NSDictionary *)notification toUsers:(NSArray *)users toGroup:(NSString *)group onDevice:(NSString *)device;
+- (void)registerDeviceToken:(NSString *)token;
 
 @end
 
@@ -217,6 +219,14 @@ static Mobeelizer *mobeelizer = nil;
         });
         
     }
+}
+
+- (void)registerDeviceToken:(NSString *)token {
+    [self.connectionManager registerDeviceToken:token];
+}
+
+- (void)sendRemoteNotification:(NSDictionary *)notification toUsers:(NSArray *)users toGroup:(NSString *)group onDevice:(NSString *)device {
+    [self.connectionManager sendRemoteNotification:notification toUsers:users toGroup:group onDevice:device];
 }
 
 - (MobeelizerLoginStatus)loginUser:(NSString *)user andPassword:(NSString *)password {
@@ -390,6 +400,34 @@ static Mobeelizer *mobeelizer = nil;
 
 + (Mobeelizer *)sharedInstance {
     return mobeelizer;
+}
+
++ (void)registerForRemoteNotificationsWithDeviceToken:(NSData *)token {    
+    [mobeelizer registerDeviceToken:[[[token description] stringByTrimmingCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"<>"]] stringByReplacingOccurrencesOfString:@" " withString:@""]];
+}
+
++ (void)sendRemoteNotification:(NSDictionary *)notification {
+    [mobeelizer sendRemoteNotification:notification toUsers:nil toGroup:nil onDevice:nil];
+}
+
++ (void)sendRemoteNotification:(NSDictionary *)notification onDevice:(NSString *)device {
+    [mobeelizer sendRemoteNotification:notification toUsers:nil toGroup:nil onDevice:device];
+}
+
++ (void)sendRemoteNotification:(NSDictionary *)notification toUsers:(NSArray *)users {
+    [mobeelizer sendRemoteNotification:notification toUsers:users toGroup:nil onDevice:nil];
+}
+
++ (void)sendRemoteNotification:(NSDictionary *)notification toUsers:(NSArray *)users onDevice:(NSString *)device {
+    [mobeelizer sendRemoteNotification:notification toUsers:users toGroup:nil onDevice:device];
+}
+
++ (void)sendRemoteNotification:(NSDictionary *)notification toGroup:(NSString *)group {
+    [mobeelizer sendRemoteNotification:notification toUsers:nil toGroup:group onDevice:nil];
+}
+
++ (void)sendRemoteNotification:(NSDictionary *)notification toGroup:(NSString *)group onDevice:(NSString *)device {
+    [mobeelizer sendRemoteNotification:notification toUsers:nil toGroup:group onDevice:device];
 }
 
 - (BOOL)isMultitaskingSupported {

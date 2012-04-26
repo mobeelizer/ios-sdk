@@ -60,5 +60,12 @@
     // empty
 }
 
+- (void)sendRemoteNotification:(NSDictionary *)notification toUsers:(NSArray *)users toGroup:(NSString *)group onDevice:(NSString *)device {
+    // empty
+}
+
+- (void)registerDeviceToken:(NSString *)token {
+    // empty
+}
 
 @end

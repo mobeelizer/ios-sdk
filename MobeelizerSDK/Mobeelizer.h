@@ -22,6 +22,7 @@
 
 @class MobeelizerDatabase;
 @class MobeelizerFile;
+@class MobeelizerNotification;
 
 typedef enum {
     MobeelizerLoginStatusOk = 1,
@@ -339,5 +340,66 @@ typedef enum {
  * @see MobeelizerFile
  */
 + (MobeelizerFile *)createFile:(NSString *)name withGuid:(NSString *)guid;
+
+///---------------------------------------------------------------------------------------
+/// @name Remote Notifications
+///---------------------------------------------------------------------------------------
+
+/**
+ * Register the token received from Apple Push Notification Service.
+ *
+ * @param token Device token.
+ * @see UIApplicationDelegate#application:didRegisterForRemoteNotificationsWithDeviceToken:
+ */
++ (void)registerForRemoteNotificationsWithDeviceToken:(NSData *)token;
+
+/**
+ * Broadcast the remote notification.
+ *
+ * @param notification Notification to send.
+ */
++ (void)sendRemoteNotification:(NSDictionary *)notification;
+
+/**
+ * Broadcast the remote notification to given device.
+ *
+ * @param notification Notification to send.
+ * @param device Recipients' device.
+ */
++ (void)sendRemoteNotification:(NSDictionary *)notification onDevice:(NSString *)device;
+
+/**
+ * Send the remote notification to given users.
+ *
+ * @param notification Notification to send.
+ * @param users Lists of recipients.
+ */
++ (void)sendRemoteNotification:(NSDictionary *)notification toUsers:(NSArray *)users;
+
+/**
+ * Send the remote notification to given users and device.
+ *
+ * @param notification Notification to send.
+ * @param users Lists of recipients.
+ * @param device Recipients' device. 
+ */
++ (void)sendRemoteNotification:(NSDictionary *)notification toUsers:(NSArray *)users onDevice:(NSString *)device;
+
+/**
+ * Send the remote notification to given users' group.
+ *
+ * @param notification Notification to send.
+ * @param group Recipients' group.
+ */
++ (void)sendRemoteNotification:(NSDictionary *)notification toGroup:(NSString *)group;
+
+/**
+ * Send the remote notification to given group and device.
+ *
+ * @param notification Notification to send.
+ * @param group Recipients' group.
+ * @param device Recipients' device.
+ */
++ (void)sendRemoteNotification:(NSDictionary *)notification toGroup:(NSString *)group onDevice:(NSString *)device;
 
 @end
