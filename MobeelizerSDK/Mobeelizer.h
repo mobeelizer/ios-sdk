@@ -22,7 +22,6 @@
 
 @class MobeelizerDatabase;
 @class MobeelizerFile;
-@class MobeelizerNotification;
 
 typedef enum {
     MobeelizerLoginStatusOk = 1,
