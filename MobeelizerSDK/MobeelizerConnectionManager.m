@@ -60,12 +60,12 @@
     // empty
 }
 
-- (void)sendRemoteNotification:(NSDictionary *)notification toUsers:(NSArray *)users toGroup:(NSString *)group onDevice:(NSString *)device {
-    // empty
+- (MobeelizerCommunicationStatus)sendRemoteNotification:(NSDictionary *)notification toUsers:(NSArray *)users toGroup:(NSString *)group onDevice:(NSString *)device {
+    return MobeelizerCommunicationStatusSuccess;
 }
 
-- (void)registerDeviceToken:(NSString *)token {
-    // empty
+- (MobeelizerCommunicationStatus)registerDeviceToken:(NSString *)token {
+    return MobeelizerCommunicationStatusSuccess;
 }
 
 @end
