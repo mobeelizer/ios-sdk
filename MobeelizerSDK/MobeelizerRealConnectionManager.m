@@ -319,7 +319,6 @@
     }
 }
 
-
 - (MobeelizerCommunicationStatus)registerDeviceToken:(NSString *)token {
     MobeelizerLog(@"Register push token: %@", token);
     
@@ -345,7 +344,7 @@
         }
         
         NSString *status = [json objectForKey:@"status"];
-            return MobeelizerCommunicationStatusSuccess;
+
         if([status isEqualToString:@"OK"]) {
             return MobeelizerCommunicationStatusSuccess;
         } else if([status isEqualToString:@"ERROR"]) {
@@ -357,6 +356,49 @@
         }
     } else {
         return MobeelizerCommunicationStatusSuccess;
+    }
+}
+
+- (MobeelizerCommunicationStatus)unregisterForRemoteNotifications { 
+    MobeelizerLog(@"Unregister push token: %@", self.deviceToken);
+    
+    if(self.deviceToken == nil) {
+        return MobeelizerCommunicationStatusSuccess;
+    }
+    
+    if([Mobeelizer isLoggedIn]) {    
+        int statusCode;
+        
+        NSData *data = [self requestPath:@"unregisterPushToken" withMethod:@"POST" withParams:[NSDictionary dictionaryWithObjectsAndKeys:self.deviceToken, @"deviceToken", @"ios", @"deviceType", nil] returningStatusCode:&statusCode];
+        
+        if(data == nil || statusCode != 200) {
+            MobeelizerLog(@"Unregister push token failure failure. Connection failure with status %d.", statusCode);
+            return MobeelizerCommunicationStatusConnectionFailure;
+        }
+        
+        NSError* error = nil;
+        
+        NSDictionary* json = [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:&error];
+        
+        if(error != nil) {
+            MobeelizerLog(@"JSON parser has failed: %@ for data: %@", [error localizedDescription], [[NSString alloc] initWithData:data encoding:NSASCIIStringEncoding]);
+            return MobeelizerCommunicationStatusResponseFailure;
+        }
+        
+        NSString *status = [json objectForKey:@"status"];
+
+        if([status isEqualToString:@"OK"]) {
+            self.deviceToken = nil;
+            return MobeelizerCommunicationStatusSuccess;
+        } else if([status isEqualToString:@"ERROR"]) {
+            MobeelizerLog(@"Unregister push token failure with message: %@.", [[json objectForKey:@"content"] objectForKey:@"message"]);
+            return MobeelizerCommunicationStatusResponseFailure;
+        } else {
+            MobeelizerLog(@"Unregister push token failure failure: %@.", [json objectForKey:@"content"]);
+            return MobeelizerCommunicationStatusResponseFailure;
+        }
+    } else {
+        return MobeelizerCommunicationStatusConnectionFailure;
     }
 }
 

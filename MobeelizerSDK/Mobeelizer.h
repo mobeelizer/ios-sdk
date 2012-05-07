@@ -359,13 +359,28 @@ typedef enum {
  * - MobeelizerCommunicationStatusSuccess - The operation has finished successfully.
  * - MobeelizerCommunicationStatusConnectionFailure - The operation has failed because of an connection error.
  * - MobeelizerCommunicationStatusResponseFailure - The operation has failed because of an invalid response error.
- * - MobeelizerCommunicationStatusOtherFailure - The operation has failed.
+ * - MobeelizerCommunicationStatusOtherFailure - The operatioIn has failed.
  *
  * @param token Device token.
  * @return Operation status.
  * @see UIApplicationDelegate#application:didRegisterForRemoteNotificationsWithDeviceToken:
  */
 + (MobeelizerCommunicationStatus)registerForRemoteNotificationsWithDeviceToken:(NSData *)token;
+
+/**
+ * Unregister device from Apple Push Notification Service.
+ *
+ * The possible values of operation status:
+ * 
+ * - MobeelizerCommunicationStatusSuccess - The operation has finished successfully.
+ * - MobeelizerCommunicationStatusConnectionFailure - The operation has failed because of an connection error.
+ * - MobeelizerCommunicationStatusResponseFailure - The operation has failed because of an invalid response error.
+ * - MobeelizerCommunicationStatusOtherFailure - The operation has failed.
+ *
+ * @return Operation status.
+ * @see UIApplication#unregisterForRemoteNotifications
+ */
++ (MobeelizerCommunicationStatus)unregisterForRemoteNotifications;
 
 /**
  * Broadcast the remote notification.
@@ -396,7 +411,7 @@ typedef enum {
  * @param device Recipients' device.
  * @return Operation status.
  */
-+ (MobeelizerCommunicationStatus)sendRemoteNotification:(NSDictionary *)notification onDevice:(NSString *)device;
++ (MobeelizerCommunicationStatus)sendRemoteNotification:(NSDictionary *)notification toDevice:(NSString *)device;
 
 /**
  * Send the remote notification to given users.

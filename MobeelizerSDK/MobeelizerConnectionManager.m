@@ -68,4 +68,8 @@
     return MobeelizerCommunicationStatusSuccess;
 }
 
+- (MobeelizerCommunicationStatus)unregisterForRemoteNotifications {
+    return MobeelizerCommunicationStatusSuccess;
+}
+
 @end
