@@ -19,9 +19,12 @@
 // 
 
 #import "MobeelizerModelDefinition.h"
+#import "MobeelizerModelCredentials.h"
 
 @interface MobeelizerModelDefinition (Digest)
 
 - (NSString *)versionDigest;
+- (NSString *)calculateCredentialsDigest:(NSString *)role readAllowed:(MobeelizerCredential)readAllowed createAllowed:(MobeelizerCredential)createAllowed updateAllowed:(MobeelizerCredential)updateAllowed deleteAllowed:(MobeelizerCredential)deleteAllowed resolveConflictAllowed:(BOOL)resolveConflictAllowed;
+- (NSInteger)calculateCredentialDigest:(MobeelizerCredential)credential;
 
 @end
