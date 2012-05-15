@@ -23,6 +23,7 @@
 @interface MobeelizerDefinitionManager (Digest)
 
 - (NSString *)digestVersion;
+- (NSArray *)versionDigestRoles;
 + (void)digest:(NSArray *)objects andAddSortedToDigest:(NSMutableString *)digest;
 + (void)addSortedDigests:(NSArray *)digests toDigest:(NSMutableString *)digest;
 
