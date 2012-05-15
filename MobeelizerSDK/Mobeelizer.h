@@ -363,7 +363,6 @@ typedef enum {
  *
  * @param token Device token.
  * @return Operation status.
- * @see UIApplicationDelegate#application:didRegisterForRemoteNotificationsWithDeviceToken:
  */
 + (MobeelizerCommunicationStatus)registerForRemoteNotificationsWithDeviceToken:(NSData *)token;
 
@@ -378,7 +377,6 @@ typedef enum {
  * - MobeelizerCommunicationStatusOtherFailure - The operation has failed.
  *
  * @return Operation status.
- * @see UIApplication#unregisterForRemoteNotifications
  */
 + (MobeelizerCommunicationStatus)unregisterForRemoteNotifications;
 
