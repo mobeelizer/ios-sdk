@@ -37,5 +37,8 @@
 - (BOOL)waitUntilSyncRequestComplete:(NSString *)ticket;
 - (NSString *)getSyncData:(NSString *)ticket;
 - (void)confirmTask:(NSString *)ticket;
+- (MobeelizerCommunicationStatus)sendRemoteNotification:(NSDictionary *)notification toUsers:(NSArray *)users toGroup:(NSString *)group onDevice:(NSString *)device;
+- (MobeelizerCommunicationStatus)registerDeviceToken:(NSString *)token;
+- (MobeelizerCommunicationStatus)unregisterForRemoteNotifications;
 
 @end

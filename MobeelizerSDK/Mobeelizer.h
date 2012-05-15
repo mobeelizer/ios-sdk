@@ -43,6 +43,13 @@ typedef enum {
 } MobeelizerSyncStatus;
 
 typedef enum {
+    MobeelizerCommunicationStatusSuccess = 1,
+    MobeelizerCommunicationStatusConnectionFailure = -1,
+    MobeelizerCommunicationStatusResponseFailure = -2,
+    MobeelizerCommunicationStatusOtherFailure = -3
+} MobeelizerCommunicationStatus;    
+
+typedef enum {
     MobeelizerCredentialNone = 0,
     MobeelizerCredentialOwn,
     MobeelizerCredentialGroup,
@@ -339,5 +346,137 @@ typedef enum {
  * @see MobeelizerFile
  */
 + (MobeelizerFile *)createFile:(NSString *)name withGuid:(NSString *)guid;
+
+///---------------------------------------------------------------------------------------
+/// @name Remote Notifications
+///---------------------------------------------------------------------------------------
+
+/**
+ * Register the token received from Apple Push Notification Service.
+ *
+ * The possible values of operation status:
+ * 
+ * - MobeelizerCommunicationStatusSuccess - The operation has finished successfully.
+ * - MobeelizerCommunicationStatusConnectionFailure - The operation has failed because of an connection error.
+ * - MobeelizerCommunicationStatusResponseFailure - The operation has failed because of an invalid response error.
+ * - MobeelizerCommunicationStatusOtherFailure - The operatioIn has failed.
+ *
+ * @param token Device token.
+ * @return Operation status.
+ * @see UIApplicationDelegate#application:didRegisterForRemoteNotificationsWithDeviceToken:
+ */
++ (MobeelizerCommunicationStatus)registerForRemoteNotificationsWithDeviceToken:(NSData *)token;
+
+/**
+ * Unregister device from Apple Push Notification Service.
+ *
+ * The possible values of operation status:
+ * 
+ * - MobeelizerCommunicationStatusSuccess - The operation has finished successfully.
+ * - MobeelizerCommunicationStatusConnectionFailure - The operation has failed because of an connection error.
+ * - MobeelizerCommunicationStatusResponseFailure - The operation has failed because of an invalid response error.
+ * - MobeelizerCommunicationStatusOtherFailure - The operation has failed.
+ *
+ * @return Operation status.
+ * @see UIApplication#unregisterForRemoteNotifications
+ */
++ (MobeelizerCommunicationStatus)unregisterForRemoteNotifications;
+
+/**
+ * Broadcast the remote notification.
+ *
+ * The possible values of operation status:
+ * 
+ * - MobeelizerCommunicationStatusSuccess - The operation has finished successfully.
+ * - MobeelizerCommunicationStatusConnectionFailure - The operation has failed because of an connection error.
+ * - MobeelizerCommunicationStatusResponseFailure - The operation has failed because of an invalid response error.
+ * - MobeelizerCommunicationStatusOtherFailure - The operation has failed.
+ *
+ * @param notification Notification to send.
+ * @return Operation status.
+ */
++ (MobeelizerCommunicationStatus)sendRemoteNotification:(NSDictionary *)notification;
+
+/**
+ * Broadcast the remote notification to given device.
+ *
+ * The possible values of operation status:
+ * 
+ * - MobeelizerCommunicationStatusSuccess - The operation has finished successfully.
+ * - MobeelizerCommunicationStatusConnectionFailure - The operation has failed because of an connection error.
+ * - MobeelizerCommunicationStatusResponseFailure - The operation has failed because of an invalid response error.
+ * - MobeelizerCommunicationStatusOtherFailure - The operation has failed.
+ *
+ * @param notification Notification to send.
+ * @param device Recipients' device.
+ * @return Operation status.
+ */
++ (MobeelizerCommunicationStatus)sendRemoteNotification:(NSDictionary *)notification toDevice:(NSString *)device;
+
+/**
+ * Send the remote notification to given users.
+ *
+ * The possible values of operation status:
+ * 
+ * - MobeelizerCommunicationStatusSuccess - The operation has finished successfully.
+ * - MobeelizerCommunicationStatusConnectionFailure - The operation has failed because of an connection error.
+ * - MobeelizerCommunicationStatusResponseFailure - The operation has failed because of an invalid response error.
+ * - MobeelizerCommunicationStatusOtherFailure - The operation has failed.
+ *
+ * @param notification Notification to send.
+ * @param users Lists of recipients.
+ * @return Operation status.
+ */
++ (MobeelizerCommunicationStatus)sendRemoteNotification:(NSDictionary *)notification toUsers:(NSArray *)users;
+
+/**
+ * Send the remote notification to given users and device.
+ *
+ * The possible values of operation status:
+ * 
+ * - MobeelizerCommunicationStatusSuccess - The operation has finished successfully.
+ * - MobeelizerCommunicationStatusConnectionFailure - The operation has failed because of an connection error.
+ * - MobeelizerCommunicationStatusResponseFailure - The operation has failed because of an invalid response error.
+ * - MobeelizerCommunicationStatusOtherFailure - The operation has failed.
+ *
+ * @param notification Notification to send.
+ * @param users Lists of recipients.
+ * @param device Recipients' device. 
+ * @return Operation status.
+ */
++ (MobeelizerCommunicationStatus)sendRemoteNotification:(NSDictionary *)notification toUsers:(NSArray *)users onDevice:(NSString *)device;
+
+/**
+ * Send the remote notification to given users' group.
+ *
+ * The possible values of operation status:
+ * 
+ * - MobeelizerCommunicationStatusSuccess - The operation has finished successfully.
+ * - MobeelizerCommunicationStatusConnectionFailure - The operation has failed because of an connection error.
+ * - MobeelizerCommunicationStatusResponseFailure - The operation has failed because of an invalid response error.
+ * - MobeelizerCommunicationStatusOtherFailure - The operation has failed.
+ *
+ * @param notification Notification to send.
+ * @param group Recipients' group.
+ * @return Operation status.
+ */
++ (MobeelizerCommunicationStatus)sendRemoteNotification:(NSDictionary *)notification toGroup:(NSString *)group;
+
+/**
+ * Send the remote notification to given group and device.
+ *
+ * The possible values of operation status:
+ * 
+ * - MobeelizerCommunicationStatusSuccess - The operation has finished successfully.
+ * - MobeelizerCommunicationStatusConnectionFailure - The operation has failed because of an connection error.
+ * - MobeelizerCommunicationStatusResponseFailure - The operation has failed because of an invalid response error.
+ * - MobeelizerCommunicationStatusOtherFailure - The operation has failed.
+ *
+ * @param notification Notification to send.
+ * @param group Recipients' group.
+ * @param device Recipients' device.
+ * @return Operation status.
+ */
++ (MobeelizerCommunicationStatus)sendRemoteNotification:(NSDictionary *)notification toGroup:(NSString *)group onDevice:(NSString *)device;
 
 @end
