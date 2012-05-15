@@ -19,9 +19,12 @@
 // 
 
 #import "MobeelizerFieldDefinition.h"
+#import "MobeelizerFieldCredentials.h"
 
 @interface MobeelizerFieldDefinition (Digest)
 
 - (NSString *)versionDigest;
+- (NSString *)calculateCredentialsDigest:(NSString *)role readAllowed:(MobeelizerCredential)readAllowed createAllowed:(MobeelizerCredential)createAllowed updateAllowed:(MobeelizerCredential)updateAllowed;
+- (NSInteger)calculateCredentialDigest:(MobeelizerCredential)credential;
 
 @end
