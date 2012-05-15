@@ -26,16 +26,18 @@
 @interface MobeelizerRealConnectionManager ()
 
 @property (nonatomic, strong) NSString *password;
+@property (nonatomic, strong) NSString *deviceToken;
 @property (nonatomic, weak) Mobeelizer *mobeelizer;
 
 - (NSData *)requestPath:(NSString *)path withMethod:(NSString *)method withParams:(NSDictionary *)params returningStatusCode:(int *)statusCode;
+- (NSData *)requestPath:(NSString *)path withJson:(NSData *)json returningStatusCode:(int *)statusCode;
 - (NSData *)requestPath:(NSString *)path withFile:(NSData *)file returningStatusCode:(int *)statusCode;
 
 @end
 
 @implementation MobeelizerRealConnectionManager
 
-@synthesize mobeelizer=_mobeelizer, password=_password;
+@synthesize mobeelizer=_mobeelizer, password=_password, deviceToken=_deviceToken;
 
 - (id)initWithMobeelizer:(Mobeelizer *)mobeelizer {
     if(self = [super init]) {
@@ -75,9 +77,15 @@
     
     int statusCode;
     
-    NSData *data = [self requestPath:@"authenticate" withMethod:@"GET" withParams:[NSDictionary dictionary] returningStatusCode:&statusCode];
+    NSData *data;
     
-    if(statusCode != 200) {
+    if(self.deviceToken == nil) {
+        data = [self requestPath:@"authenticate" withMethod:@"GET" withParams:[NSDictionary dictionary] returningStatusCode:&statusCode];
+    } else {
+        data = [self requestPath:@"authenticate" withMethod:@"GET" withParams:[NSDictionary dictionaryWithObjectsAndKeys:self.deviceToken, @"deviceToken", @"ios", @"deviceType", nil] returningStatusCode:&statusCode];
+    }
+    
+    if(data == nil || statusCode != 200) {
         NSDictionary *roleAndInstanceGuid = [self.mobeelizer.internalDatabase getRoleAndInstanceGuidForInstance:self.instance andUser:self.user andPassword:self.password];
         
         if (roleAndInstanceGuid == nil) {
@@ -147,7 +155,7 @@
     
     NSData *data = [self requestPath:@"synchronizeAll" withMethod:@"POST" withParams:[NSDictionary dictionary] returningStatusCode:&statusCode];
     
-    if(statusCode != 200) {
+    if(data == nil || statusCode != 200) {
         MobeelizerException(@"Request sync all failure.", @"Request sync all failure. Connection failure with status %d.", statusCode);
         return nil;
     }
@@ -157,7 +165,7 @@
     NSDictionary* json = [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:&error];
     
     if(error != nil) {
-        MobeelizerLog(@"JSON parser has failed: %@ for data: %@", [error localizedDescription], [[NSString alloc] initWithData:data encoding:NSASCIIStringEncoding]);
+        MobeelizerException(@"JSON parser has failed", @"JSON parser has failed: %@ for data: %@", [error localizedDescription], [[NSString alloc] initWithData:data encoding:NSASCIIStringEncoding]);
         return nil;
     }
     
@@ -181,7 +189,7 @@
     
     NSData *data = [self requestPath:@"synchronize" withFile:[NSData dataWithContentsOfFile:dataPath] returningStatusCode:&statusCode];
     
-    if(statusCode != 200) {
+    if(data == nil || statusCode != 200) {
         MobeelizerException(@"Request sync diff failure.", @"Request sync diff failure. Connection failure with status %d.", statusCode);
         return nil;
     }
@@ -191,7 +199,7 @@
     NSDictionary* json = [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:&error];
     
     if(error != nil) {
-        MobeelizerLog(@"JSON parser has failed: %@ for data: %@", [error localizedDescription], [[NSString alloc] initWithData:data encoding:NSASCIIStringEncoding]);
+        MobeelizerException(@"JSON parser has failed", @"JSON parser has failed: %@ for data: %@", [error localizedDescription], [[NSString alloc] initWithData:data encoding:NSASCIIStringEncoding]);
         return nil;
     }
     
@@ -216,7 +224,7 @@
         
         NSData *data = [self requestPath:@"checkStatus" withMethod:@"GET" withParams:[NSDictionary dictionaryWithObject:ticket forKey:@"ticket"]  returningStatusCode:&statusCode];
         
-        if(statusCode != 200) {
+        if(data == nil || statusCode != 200) {
             MobeelizerException(@"Check task status failure.", @"Check task status failure. Connection failure with status %d.", statusCode);
             return FALSE;
         }
@@ -226,7 +234,7 @@
         NSDictionary* json = [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:&error];
         
         if(error != nil) {
-            MobeelizerLog(@"JSON parser has failed: %@ for data: %@", [error localizedDescription], [[NSString alloc] initWithData:data encoding:NSASCIIStringEncoding]);
+            MobeelizerException(@"JSON parser has failed", @"JSON parser has failed: %@ for data: %@", [error localizedDescription], [[NSString alloc] initWithData:data encoding:NSASCIIStringEncoding]);
             return FALSE;
         }
         
@@ -264,8 +272,9 @@
     
     NSData *data = [self requestPath:@"data" withMethod:@"GET" withParams:[NSDictionary dictionaryWithObject:ticket forKey:@"ticket"] returningStatusCode:&statusCode];
     
-    if(statusCode != 200) {
+    if(data == nil || statusCode != 200) {
         MobeelizerException(@"Get sync data failure.", @"Get sync data failure. Connection failure with status %d.", statusCode);
+        return nil;
     }
     
     NSString *dataFilePath = [NSTemporaryDirectory() stringByAppendingPathComponent:[NSString stringWithFormat:@"%@.dat", ticket]];
@@ -285,8 +294,9 @@
     
     NSData *data = [self requestPath:@"confirm" withMethod:@"POST" withParams:[NSDictionary dictionaryWithObject:ticket forKey:@"ticket"] returningStatusCode:&statusCode];
     
-    if(statusCode != 200) {
+    if(data == nil || statusCode != 200) {
         MobeelizerException(@"Confirm task failure.", @"Confirm task failure. Connection failure with status %d.", statusCode);
+        return;
     }
     
     NSError* error = nil;
@@ -294,7 +304,8 @@
     NSDictionary* json = [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:&error];
     
     if(error != nil) {
-        MobeelizerLog(@"JSON parser has failed: %@ for data: %@", [error localizedDescription], [[NSString alloc] initWithData:data encoding:NSASCIIStringEncoding]);
+        MobeelizerException(@"JSON parser has failed", @"JSON parser has failed: %@ for data: %@", [error localizedDescription], [[NSString alloc] initWithData:data encoding:NSASCIIStringEncoding]);
+        return;
     }
     
     NSString *status = [json objectForKey:@"status"];
@@ -305,6 +316,136 @@
         MobeelizerException(@"Confirm task failure.", @"Confirm task with message: %@.", [[json objectForKey:@"content"] objectForKey:@"message"]);
     } else {
         MobeelizerException(@"Confirm task failure.", @"Confirm task failure: %@.", [json objectForKey:@"content"]);
+    }
+}
+
+- (MobeelizerCommunicationStatus)registerDeviceToken:(NSString *)token {
+    MobeelizerLog(@"Register push token: %@", token);
+    
+    self.deviceToken = token;
+    
+    if([Mobeelizer isLoggedIn]) {    
+        int statusCode;
+        
+        NSData *data = [self requestPath:@"registerPushToken" withMethod:@"POST" withParams:[NSDictionary dictionaryWithObjectsAndKeys:self.deviceToken, @"deviceToken", @"ios", @"deviceType", nil] returningStatusCode:&statusCode];
+        
+        if(data == nil || statusCode != 200) {
+            MobeelizerLog(@"Register push token failure failure. Connection failure with status %d.", statusCode);
+            return MobeelizerCommunicationStatusConnectionFailure;
+        }
+        
+        NSError* error = nil;
+        
+        NSDictionary* json = [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:&error];
+        
+        if(error != nil) {
+            MobeelizerLog(@"JSON parser has failed: %@ for data: %@", [error localizedDescription], [[NSString alloc] initWithData:data encoding:NSASCIIStringEncoding]);
+            return MobeelizerCommunicationStatusResponseFailure;
+        }
+        
+        NSString *status = [json objectForKey:@"status"];
+
+        if([status isEqualToString:@"OK"]) {
+            return MobeelizerCommunicationStatusSuccess;
+        } else if([status isEqualToString:@"ERROR"]) {
+            MobeelizerLog(@"Register push token failure with message: %@.", [[json objectForKey:@"content"] objectForKey:@"message"]);
+            return MobeelizerCommunicationStatusResponseFailure;
+        } else {
+            MobeelizerLog(@"Register push token failure failure: %@.", [json objectForKey:@"content"]);
+            return MobeelizerCommunicationStatusResponseFailure;
+        }
+    } else {
+        return MobeelizerCommunicationStatusSuccess;
+    }
+}
+
+- (MobeelizerCommunicationStatus)unregisterForRemoteNotifications { 
+    MobeelizerLog(@"Unregister push token: %@", self.deviceToken);
+    
+    if(self.deviceToken == nil) {
+        return MobeelizerCommunicationStatusSuccess;
+    }
+    
+    if([Mobeelizer isLoggedIn]) {    
+        int statusCode;
+        
+        NSData *data = [self requestPath:@"unregisterPushToken" withMethod:@"POST" withParams:[NSDictionary dictionaryWithObjectsAndKeys:self.deviceToken, @"deviceToken", @"ios", @"deviceType", nil] returningStatusCode:&statusCode];
+        
+        if(data == nil || statusCode != 200) {
+            MobeelizerLog(@"Unregister push token failure failure. Connection failure with status %d.", statusCode);
+            return MobeelizerCommunicationStatusConnectionFailure;
+        }
+        
+        NSError* error = nil;
+        
+        NSDictionary* json = [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:&error];
+        
+        if(error != nil) {
+            MobeelizerLog(@"JSON parser has failed: %@ for data: %@", [error localizedDescription], [[NSString alloc] initWithData:data encoding:NSASCIIStringEncoding]);
+            return MobeelizerCommunicationStatusResponseFailure;
+        }
+        
+        NSString *status = [json objectForKey:@"status"];
+
+        if([status isEqualToString:@"OK"]) {
+            self.deviceToken = nil;
+            return MobeelizerCommunicationStatusSuccess;
+        } else if([status isEqualToString:@"ERROR"]) {
+            MobeelizerLog(@"Unregister push token failure with message: %@.", [[json objectForKey:@"content"] objectForKey:@"message"]);
+            return MobeelizerCommunicationStatusResponseFailure;
+        } else {
+            MobeelizerLog(@"Unregister push token failure failure: %@.", [json objectForKey:@"content"]);
+            return MobeelizerCommunicationStatusResponseFailure;
+        }
+    } else {
+        return MobeelizerCommunicationStatusConnectionFailure;
+    }
+}
+
+- (MobeelizerCommunicationStatus)sendRemoteNotification:(NSDictionary *)notification toUsers:(NSArray *)users toGroup:(NSString *)group onDevice:(NSString *)device {
+    MobeelizerLog(@"Send remote notification: %@", notification);
+    
+    int statusCode;
+    
+    NSMutableDictionary *params = [NSMutableDictionary dictionary];
+    [params setObject:(users == nil ? [NSNull null] : users) forKey:@"users"];
+    [params setObject:(group == nil ? [NSNull null] : group) forKey:@"group"];
+    [params setObject:(device == nil ? [NSNull null] : device) forKey:@"device"];
+    [params setObject:notification forKey:@"notification"];
+    
+    NSError* error = nil;
+    
+    NSData *request = [NSJSONSerialization dataWithJSONObject:params options:kNilOptions error:&error];
+    
+    if(error != nil) {
+        MobeelizerLog(@"JSON creation has failed: %@ for dictionary: %@", [error localizedDescription], params);
+        return MobeelizerCommunicationStatusOtherFailure;
+    }
+    
+    NSData *data = [self requestPath:@"push" withJson:request returningStatusCode:&statusCode];
+    
+    if(data == nil || statusCode != 200) {
+        MobeelizerLog(@"Send remote notification failure failure. Connection failure with status %d.", statusCode);
+        return MobeelizerCommunicationStatusConnectionFailure;
+    }
+    
+    NSDictionary* json = [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:&error];
+    
+    if(error != nil) {
+        MobeelizerLog(@"JSON parser has failed: %@ for data: %@", [error localizedDescription], [[NSString alloc] initWithData:data encoding:NSASCIIStringEncoding]);
+        return MobeelizerCommunicationStatusResponseFailure;
+    }
+    
+    NSString *status = [json objectForKey:@"status"];
+    
+    if([status isEqualToString:@"OK"]) {
+        return MobeelizerCommunicationStatusSuccess;
+    } else if([status isEqualToString:@"ERROR"]) {
+        MobeelizerLog(@"Send remote notification failure with message: %@.", [[json objectForKey:@"content"] objectForKey:@"message"]);
+        return MobeelizerCommunicationStatusResponseFailure;
+    } else {
+        MobeelizerLog(@"Send remote notification failure failure: %@.", [json objectForKey:@"content"]);
+        return MobeelizerCommunicationStatusResponseFailure;
     }
 }
 
@@ -344,21 +485,58 @@
     
     if(error != nil) {
         MobeelizerLog(@"Request has failed: %@", [error localizedDescription]);
+        return nil;
+    }
+    
+    return data;
+}
+
+- (NSData *)requestPath:(NSString *)path withJson:(NSData *)json returningStatusCode:(int *)statusCode {
+    NSURL *url = [self.mobeelizer.url URLByAppendingPathComponent:path];
+    
+    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url cachePolicy:NSURLRequestReloadIgnoringLocalAndRemoteCacheData timeoutInterval:10];
+    
+    [request setValue:self.mobeelizer.vendor forHTTPHeaderField:@"mas-vendor-name"];
+    [request setValue:self.mobeelizer.application forHTTPHeaderField:@"mas-application-name"];    
+    [request setValue:self.mobeelizer.versionDigest forHTTPHeaderField:@"mas-definition-digest"];
+    [request setValue:self.mobeelizer.device forHTTPHeaderField:@"mas-device-name"];
+    [request setValue:self.mobeelizer.deviceIdentifier forHTTPHeaderField:@"mas-device-identifier"];
+    [request setValue:self.user forHTTPHeaderField:@"mas-user-name"];
+    [request setValue:self.password forHTTPHeaderField:@"mas-user-password"];
+    [request setValue:self.instance forHTTPHeaderField:@"mas-application-instance-name"];
+    [request setValue:[NSString stringWithFormat:@"ios-sdk-%@", [Mobeelizer version]] forHTTPHeaderField:@"mas-sdk-version"];
+    
+    [request setValue:@"application/json" forHTTPHeaderField:@"content-type"];
+    [request setHTTPBody:json];
+    
+    [request setHTTPMethod:@"POST"];
+    
+    NSError* error = nil;
+    NSURLResponse* response = nil;
+    NSData *data = [NSURLConnection sendSynchronousRequest:request returningResponse:&response error:&error];
+    
+    *statusCode = [(NSHTTPURLResponse *)response statusCode]; 
+    
+    if(error != nil) {
+        MobeelizerLog(@"Request has failed: %@", [error localizedDescription]);
+        return nil;
     }
     
     return data;
 }
 
 - (NSData *)requestPath:(NSString *)path withMethod:(NSString *)method withParams:(NSDictionary *)params returningStatusCode:(int *)statusCode {
-    if([params count] > 1) {
-        MobeelizerException(@"Multiple params not supported", @"Multiple params not supported");
-        return nil;
-    }
-       
     NSURL *url = [self.mobeelizer.url URLByAppendingPathComponent:path];
     
     if([params count] > 0) {
-        url = [NSURL URLWithString:[NSString stringWithFormat:@"%@?ticket=%@", url, [params valueForKey:@"ticket"]]];
+        NSMutableArray *parts = [NSMutableArray array];
+        
+        for (NSString *key in params.keyEnumerator) {
+            NSString *value = [params objectForKey: key];
+            [parts addObject:[NSString stringWithFormat: @"%@=%@", [key stringByAddingPercentEscapesUsingEncoding: NSUTF8StringEncoding], [value stringByAddingPercentEscapesUsingEncoding: NSUTF8StringEncoding]]];
+        }
+        
+        url = [NSURL URLWithString:[NSString stringWithFormat:@"%@?%@", url, [parts componentsJoinedByString: @"&"]]];
     }    
     
     NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url cachePolicy:NSURLRequestReloadIgnoringLocalAndRemoteCacheData timeoutInterval:10];
@@ -385,6 +563,7 @@
     
     if(error != nil) {
         MobeelizerLog(@"Request has failed: %@", [error localizedDescription]);
+        return nil;
     }
     
     return data;
