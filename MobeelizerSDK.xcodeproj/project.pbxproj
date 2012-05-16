@@ -13,7 +13,7 @@
 			buildPhases = (
 				C82A4ABB14FE719F00D7B591 /* Run Script */,
 				C865E312150F90D600514EA9 /* ShellScript */,
-				C865E31E1510C2DC00514EA9 /* ShellScript */,
+				C865E31E1510C2DC00514EA9 /* Run Script */,
 			);
 			dependencies = (
 				C82A4C5D1501054900D7B591 /* PBXTargetDependency */,
@@ -877,7 +877,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "/usr/bin/appledoc \\\n--project-name \"MobeelizerSDK\" \\\n--project-version \"${FRAMEWORK_VERSION}\" \\\n--project-company \"Mobeelizer Ltd\" \\\n--company-id com.mobeelizer \\\n--logformat xcode \\\n--explicit-crossref \\\n--exit-threshold 2 \\\n--ignore .m \\\n--ignore +Internal.h \\\n--clean-output \\\n--create-html \\\n--create-docset \\\n--publish-docset \\\n--no-install-docset \\\n--output \"${BUILD_DIR}/Docs\" \\\n--docset-feed-url \"http://sdk.mobeelizer.com/%DOCSETATOMFILENAME\" \\\n--docset-package-url \"http://sdk.mobeelizer.com/%DOCSETPACKAGEFILENAME\" \\\n--docset-atom-filename  \"mobeelizer-ios-sdk.atom\" \\\n--docset-package-filename \"mobeelizer-ios-sdk.xar\" \\\n\"${PROJECT_DIR}/MobeelizerSDK\"";
+			shellScript = "rm -rf \"${BUILD_DIR}/Docs\";\nmkdir -p \"${BUILD_DIR}/Docs/publish\";\n\n/usr/bin/appledoc \\\n--project-name \"MobeelizerSDK\" \\\n--project-version \"${FRAMEWORK_VERSION}\" \\\n--project-company \"Mobeelizer Ltd\" \\\n--company-id com.mobeelizer \\\n--logformat xcode \\\n--explicit-crossref \\\n--exit-threshold 2 \\\n--ignore .m \\\n--ignore +Internal.h \\\n--clean-output \\\n--create-html \\\n--create-docset \\\n--publish-docset \\\n--no-install-docset \\\n--output \"${BUILD_DIR}/Docs\" \\\n--docset-feed-url \"http://sdk.mobeelizer.com/%DOCSETATOMFILENAME\" \\\n--docset-package-url \"http://sdk.mobeelizer.com/%DOCSETPACKAGEFILENAME\" \\\n--docset-atom-filename  \"mobeelizer-ios-sdk.atom\" \\\n--docset-package-filename \"mobeelizer-ios-sdk.xar\" \\\n\"${PROJECT_DIR}/MobeelizerSDK\";\n\n/Developer/usr/bin/docsetutil package -output \"${BUILD_DIR}/Docs/publish/mobeelizer-ios-sdk.xar\" -atom \"${BUILD_DIR}/Docs/publish/mobeelizer-ios-sdk.atom\"  -download-url \"http://sdk.mobeelizer.com/mobeelizer-ios-sdk.xar\" \"${BUILD_DIR}/Docs/docset\";";
 		};
 		C82A4C3D1501014D00D7B591 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -929,15 +929,16 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "cd \"${BUILD_DIR}/Release-iphoneos/MobeelizerSDK.framework/Versions/Current\";\nrm -f \"${BUILD_DIR}/mobeelizer-ios-sdk.framework.zip\"\nzip -r \"${BUILD_DIR}/mobeelizer-ios-sdk.framework.zip\" .;\n\nperl \"${PROJECT_DIR}/Scripts/s3upload.pl\" --id mobeelizer --acl \"public-read\" --contentType \"application/octet-stream\" --put \"${BUILD_DIR}/mobeelizer-ios-sdk.framework.zip\" -- \"${AMAZON_BUCKET}/mobeelizer-ios-sdk.framework.zip\";\n\n# perl \"${PROJECT_DIR}/Scripts/s3upload.pl\" --id mobeelizer --acl \"public-read\" --contentType \"application/octet-stream\" --put \"${BUILD_DIR}/Docs/publish/mobeelizer-ios-sdk.xar\" -- \"${AMAZON_BUCKET}/mobeelizer-ios-sdk.xar\";\n\n# perl \"${PROJECT_DIR}/Scripts/s3upload.pl\" --id mobeelizer --acl \"public-read\" --contentType \"application/atom+xml\" --put \"${BUILD_DIR}/Docs/publish/mobeelizer-ios-sdk.atom\" -- \"${AMAZON_BUCKET}/mobeelizer-ios-sdk.atom\";";
+			shellScript = "cd \"${BUILD_DIR}/Release-iphoneos/MobeelizerSDK.framework/Versions/Current\";\nrm -f \"${BUILD_DIR}/mobeelizer-ios-sdk.framework.zip\"\nzip -r \"${BUILD_DIR}/mobeelizer-ios-sdk.framework.zip\" .;\n\nperl \"${PROJECT_DIR}/Scripts/s3upload.pl\" --id mobeelizer --acl \"public-read\" --contentType \"application/octet-stream\" --put \"${BUILD_DIR}/mobeelizer-ios-sdk.framework.zip\" -- \"${AMAZON_BUCKET}/mobeelizer-ios-sdk.framework.zip\";\n\nperl \"${PROJECT_DIR}/Scripts/s3upload.pl\" --id mobeelizer --acl \"public-read\" --contentType \"application/octet-stream\" --put \"${BUILD_DIR}/Docs/publish/mobeelizer-ios-sdk.xar\" -- \"${AMAZON_BUCKET}/mobeelizer-ios-sdk.xar\";\n\nperl \"${PROJECT_DIR}/Scripts/s3upload.pl\" --id mobeelizer --acl \"public-read\" --contentType \"application/atom+xml\" --put \"${BUILD_DIR}/Docs/publish/mobeelizer-ios-sdk.atom\" -- \"${AMAZON_BUCKET}/mobeelizer-ios-sdk.atom\";";
 		};
-		C865E31E1510C2DC00514EA9 /* ShellScript */ = {
+		C865E31E1510C2DC00514EA9 /* Run Script */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputPaths = (
 			);
+			name = "Run Script";
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
