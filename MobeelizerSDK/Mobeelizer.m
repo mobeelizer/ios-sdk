@@ -48,6 +48,7 @@
 
 @property (nonatomic, strong) MobeelizerSyncManager *syncManager;
 
+- (id)initWithConfiguration:(NSDictionary *)configuration;
 - (void)loginToInstance:(NSString *)instance withUser:(NSString *)user andPassword:(NSString *)password withCallback:(id<MobeelizerLoginCallback>)callback;
 - (MobeelizerLoginStatus)loginToInstance:(NSString *)instance withUser:(NSString *)user andPassword:(NSString *)password;
 - (void)loginUser:(NSString *)user andPassword:(NSString *)password withCallback:(id<MobeelizerLoginCallback>)callback;
@@ -79,19 +80,17 @@ static Mobeelizer *mobeelizer = nil;
     return SDK_VERSION;
 }
 
-- (id)init {  
+- (id)initWithConfiguration:(NSDictionary *)configuration {  
     if (self = [super init]) {
         _multitaskingSupported = [self isMultitaskingSupported];
         
         MobeelizerLog(@"Creating Mobeelizer SDK %@", [Mobeelizer version]);
         
-        NSDictionary *meta = [NSDictionary dictionaryWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"Mobeelizer" ofType:@"plist"]];
-        
-        _device = [meta objectForKey:META_DEVICE];
+        _device = [configuration objectForKey:META_DEVICE];
         
         MobeelizerLog(@"Device: %@", self.device);
         
-        NSString *modelPrefix = [meta objectForKey:META_MODEL_PREFIX];
+        NSString *modelPrefix = [configuration objectForKey:META_MODEL_PREFIX];
 
         MobeelizerLog(@"Model Prefix: %@", modelPrefix);
         
@@ -99,11 +98,11 @@ static Mobeelizer *mobeelizer = nil;
             MobeelizerException(@"Missing configuration parameter", @"%@ and %@ must be set in Mobeelizer.plist file.", META_DEVICE, META_MODEL_PREFIX);
         }
         
-        NSString *developmentRole = [meta objectForKey:META_DEVELOPMENT_ROLE];
+        NSString *developmentRole = [configuration objectForKey:META_DEVELOPMENT_ROLE];
         
         MobeelizerLog(@"Development Role: %@", developmentRole);
         
-        _mode = [meta objectForKey:META_MODE];
+        _mode = [configuration objectForKey:META_MODE];
         
         if(self.mode == nil) {
             _mode = MODE_DEVELOPMENT;
@@ -119,7 +118,7 @@ static Mobeelizer *mobeelizer = nil;
             MobeelizerException(@"Missing development role", @"%@ must be set in Mobeelizer.plist file if %@ is set.", META_DEVELOPMENT_ROLE, META_MODE);
         }
         
-        NSString *definitionAsset = [meta objectForKey:META_DEFINITION_ASSET];
+        NSString *definitionAsset = [configuration objectForKey:META_DEFINITION_ASSET];
         
         if(definitionAsset == nil) {
             definitionAsset = @"application.xml";
@@ -127,7 +126,7 @@ static Mobeelizer *mobeelizer = nil;
         
         MobeelizerLog(@"Definition Asset: %@", definitionAsset);        
         
-        NSString *stringUrl = [meta objectForKey:META_URL];
+        NSString *stringUrl = [configuration objectForKey:META_URL];
         
         if(stringUrl == nil) {
             if([self.mode isEqualToString:MODE_PRODUCTION]) {
@@ -336,7 +335,12 @@ static Mobeelizer *mobeelizer = nil;
 }
 
 + (void)create {
-    mobeelizer = [[Mobeelizer alloc] init];
+    NSDictionary *configuration = [NSDictionary dictionaryWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"Mobeelizer" ofType:@"plist"]];
+    mobeelizer = [[Mobeelizer alloc] initWithConfiguration:configuration];
+}
+
++ (void)createWithConfiguration:(NSDictionary *)configuration {
+    mobeelizer = [[Mobeelizer alloc] initWithConfiguration:configuration];
 }
 
 + (void)loginToInstance:(NSString *)instance withUser:(NSString *)user andPassword:(NSString *)password withCallback:(id<MobeelizerLoginCallback>)callback {
