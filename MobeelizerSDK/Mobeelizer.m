@@ -87,20 +87,24 @@ static Mobeelizer *mobeelizer = nil;
         MobeelizerLog(@"Creating Mobeelizer SDK %@", [Mobeelizer version]);
         
         _device = [configuration objectForKey:META_DEVICE];
+
+        if(self.device == nil) {
+            MobeelizerException(@"Missing configuration parameter", @"%@ must be set in configuration file.", META_DEVICE);
+        }
         
         MobeelizerLog(@"Device: %@", self.device);
         
         NSString *modelPrefix = [configuration objectForKey:META_MODEL_PREFIX];
-
-        MobeelizerLog(@"Model Prefix: %@", modelPrefix);
         
-        if(self.device == nil || modelPrefix == nil) {
-            MobeelizerException(@"Missing configuration parameter", @"%@ and %@ must be set in Mobeelizer.plist file.", META_DEVICE, META_MODEL_PREFIX);
+        if(modelPrefix == nil) {
+            MobeelizerLog(@"Model Prefix is null - application is working in NSDictionary mode.");
+        } else {
+            MobeelizerLog(@"Model Prefix: %@.", modelPrefix);            
         }
         
         NSString *developmentRole = [configuration objectForKey:META_DEVELOPMENT_ROLE];
         
-        MobeelizerLog(@"Development Role: %@", developmentRole);
+        MobeelizerLog(@"Development Role: %@.", developmentRole);
         
         _mode = [configuration objectForKey:META_MODE];
         
@@ -115,7 +119,7 @@ static Mobeelizer *mobeelizer = nil;
         }
         
         if([self.mode isEqualToString:MODE_DEVELOPMENT] && developmentRole == nil) {
-            MobeelizerException(@"Missing development role", @"%@ must be set in Mobeelizer.plist file if %@ is set.", META_DEVELOPMENT_ROLE, META_MODE);
+            MobeelizerException(@"Missing development role", @"%@ must be set in configuration if %@ is set to %@.", META_DEVELOPMENT_ROLE, META_MODE, MODE_DEVELOPMENT);
         }
         
         NSString *definitionAsset = [configuration objectForKey:META_DEFINITION_ASSET];

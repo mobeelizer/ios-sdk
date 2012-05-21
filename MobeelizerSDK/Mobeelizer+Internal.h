@@ -19,6 +19,7 @@
 // 
 
 #import "Mobeelizer.h"
+#import "Mobeelizer+Dictionary.h"
 #import "MobeelizerDatabase.h"
 #import "MobeelizerInternalDatabase.h"
 #import "MobeelizerConnectionManager.h"

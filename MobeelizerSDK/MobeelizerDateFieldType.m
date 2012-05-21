@@ -96,6 +96,10 @@
     }
 }
 
+- (NSString *)dictionaryCType {
+    return @"NSDate";
+}
+
 - (NSString *)supportedTypes {
     if(self.required) {
         return @"NSDate, NSNumber, NSInteger, int, long";

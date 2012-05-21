@@ -59,6 +59,10 @@
     return [NSArray arrayWithObjects:@"NSString", nil];
 }
 
+- (NSString *)dictionaryCType {
+    return @"NSString";
+}
+
 - (NSString *)supportedTypes {
     return @"NSString";
 }

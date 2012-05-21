@@ -31,13 +31,13 @@
 @interface MobeelizerDatabase : NSObject
 
 /**
- * Get the definition of model for the given class.
+ * Get the definition of model for the given model.
  *
- * @param name The model name.
+ * @param model The model model.
  * @return The definition of model.
  * @see MobeelizerModelDefinition
  */
-- (MobeelizerModelDefinition *)model:(NSString *)name;
+- (MobeelizerModelDefinition *)model:(NSString *)model;
 
 /**
  * Get all entities for the given class from the database.
@@ -70,7 +70,6 @@
  * @param guid The guid of entity.
  */
 - (void)remove:(Class)clazz withGuid:(NSString *)guid;
-
 /**
  * Delete the given entity from the database.
  *

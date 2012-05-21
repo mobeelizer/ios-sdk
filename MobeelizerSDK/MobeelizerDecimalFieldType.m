@@ -129,6 +129,10 @@
     }
 }
 
+- (NSString *)dictionaryCType {
+    return @"NSDecimalNumber";
+}
+
 - (NSString *)supportedTypes {
     if(self.required) {
         return @"NSDecimalNumber, double, float";

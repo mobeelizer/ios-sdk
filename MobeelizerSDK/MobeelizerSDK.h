@@ -24,7 +24,9 @@
 #import <MobeelizerSDK/MobeelizerConjunction.h>
 #import <MobeelizerSDK/MobeelizerFile.h>
 #import <MobeelizerSDK/Mobeelizer.h>
+#import <MobeelizerSDK/Mobeelizer+Dictionary.h>
 #import <MobeelizerSDK/MobeelizerDatabase.h>
+#import <MobeelizerSDK/MobeelizerDatabase+Dictionary.h>
 #import <MobeelizerSDK/MobeelizerError.h>
 #import <MobeelizerSDK/MobeelizerModelCredentials.h>
 #import <MobeelizerSDK/MobeelizerModelDefinition.h>

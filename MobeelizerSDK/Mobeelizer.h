@@ -154,14 +154,8 @@ typedef enum {
 
 /**
  * Initializer Mobeelizer. Invoke it immediately after launching the application (didFinishLaunchingWithOptions). 
- * This method is the equivalent of createWithConfiguration: invoked with configuration taken from Mobeelizer.plist file.
  */
 + (void)create;
-
-/**
- * Initializer Mobeelizer with given configuration.
- */
-+ (void)createWithConfiguration:(NSDictionary *)configuration;
 
 /**
  * Destroy Mobeelizer. Invoke it just before terminating the application (applicationWillTerminate).

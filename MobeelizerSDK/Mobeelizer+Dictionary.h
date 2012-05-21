@@ -1,5 +1,5 @@
 // 
-// MobeelizerBelongsToRestrition.h
+// Mobeelizer+Dictionary.h
 // 
 // Copyright (C) 2012 Mobeelizer Ltd. All Rights Reserved.
 //
@@ -18,13 +18,17 @@
 // 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 // 
 
-#import <Foundation/Foundation.h>
-#import "MobeelizerCriterion.h"
+#import "Mobeelizer.h"
 
-@interface MobeelizerBelongsToRestrition : MobeelizerCriterion
+/**
+ * Mobeelizer extension to start with NSDictionary configuration instead of plist one.
+ */
 
-- (id)initWithField:(NSString *)field andClazz:(Class)clazz andGuid:(NSString *)guid;
+@interface Mobeelizer (Dictionary)
 
-- (id)initWithField:(NSString *)field andModel:(NSString *)model andGuid:(NSString *)guid;
+/**
+ * Initializer Mobeelizer with given configuration.
+ */
++ (void)createWithConfiguration:(NSDictionary *)configuration;
 
 @end

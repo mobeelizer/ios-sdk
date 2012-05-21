@@ -225,10 +225,18 @@
 
 + (MobeelizerCriterion *)field:(NSString *)field belongsToEntityWithClass:(Class) clazz withGuid:(NSString *)guid {
     return [[MobeelizerBelongsToRestrition alloc] initWithField:field andClazz:clazz andGuid:guid];
- }
+}
+
++ (MobeelizerCriterion *)field:(NSString *)field belongsToEntityWithModel:(NSString *)model withGuid:(NSString *)guid {
+    return [[MobeelizerBelongsToRestrition alloc] initWithField:field andModel:model andGuid:guid];
+}
 
 + (MobeelizerCriterion *)field:(NSString *)field belongsToEntity:(id)entity {    
-    return [[MobeelizerBelongsToRestrition alloc] initWithField:field andClazz:[entity class] andGuid:[entity valueForKey:@"guid"]];
+    if([entity isKindOfClass:[NSDictionary class]]) {
+        return [[MobeelizerBelongsToRestrition alloc] initWithField:field andModel:[entity valueForKey:@"@model"] andGuid:[entity valueForKey:@"guid"]];
+    } else {
+        return [[MobeelizerBelongsToRestrition alloc] initWithField:field andClazz:[entity class] andGuid:[entity valueForKey:@"guid"]];
+    }
 }
 
 + (MobeelizerDisjunction *)disjunction {

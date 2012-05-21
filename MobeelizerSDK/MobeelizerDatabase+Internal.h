@@ -19,6 +19,7 @@
 // 
 
 #import "MobeelizerDatabase.h"
+#import "MobeelizerDatabase+Dictionary.h"
 
 @interface MobeelizerDatabase ()
 

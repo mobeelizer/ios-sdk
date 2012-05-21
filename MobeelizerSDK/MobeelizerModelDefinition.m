@@ -49,48 +49,61 @@
         _fields = fields;
         _credentials = nil;       
         _credential = credential;
-        _clazz = NSClassFromString(self.clazzName);
         
-        if(self.clazz == nil) {
-            MobeelizerException(@"Missing class for model", @"Cannot find class %@ for model %@.", self.clazzName, self.name);
-        }
-        
-        NSDictionary *properties = [MobeelizerPropertyUtil classProperties:self.clazz];
-
-        _hasOwner = [[properties allKeys] containsObject:@"owner"];
-        _hasModified = [[properties allKeys] containsObject:@"modified"];
-        _hasConflicted = [[properties allKeys] containsObject:@"conflicted"];
-        _hasDeleted = [[properties allKeys] containsObject:@"deleted"];        
-        
-        if(![[properties objectForKey:@"guid"] isEqualToString:@"NSString"]) {
-            MobeelizerException(@"Missing property", @"Missing property guid with type NSString");
-        }
-        
-        if(self.hasOwner && ![[properties objectForKey:@"owner"] isEqualToString:@"NSString"]) {
-            MobeelizerException(@"Invalid property", @"Invalid property query - wrong type, should be NSString");
-        }
-        
-        if(self.hasModified && ![[properties objectForKey:@"modified"] isEqualToString:@"c"]) {
-            MobeelizerException(@"Invalid property", @"Invalid property modified - wrong type, should be BOOL");
-        }
-        
-        if(self.hasDeleted && ![[properties objectForKey:@"deleted"] isEqualToString:@"c"]) {
-            MobeelizerException(@"Invalid property", @"Invalid property deleted - wrong type, should be BOOL");
-        }
-        
-        if(self.hasConflicted && ![[properties objectForKey:@"conflicted"] isEqualToString:@"c"]) {
-            MobeelizerException(@"Invalid property", @"Invalid property conflicted - wrong type, should be BOOL");
-        }
-        
-        for(MobeelizerFieldDefinition *field in _fields) {
-            NSString *fieldType = [properties valueForKey:field.name];
+        if(self.clazzName == nil) {
+            _clazz = nil;
+            _hasOwner = true;
+            _hasModified = true;
+            _hasConflicted = true;
+            _hasDeleted = true;
             
-            if(fieldType == nil || ![field.supportedCTypes containsObject:fieldType]) {
-                MobeelizerException(@"Missing property", @"Missing property %@ with type %@", field.name, field.supportedTypes)
-                return nil;
+            for(MobeelizerFieldDefinition *field in _fields) {
+                field.cType = field.dictionaryCType;        
+            }            
+        } else {        
+            _clazz = NSClassFromString(self.clazzName);
+            
+            if(self.clazz == nil) {
+                MobeelizerException(@"Missing class for model", @"Cannot find class %@ for model %@.", self.clazzName, self.name);
             }
             
-            field.cType = fieldType;        
+            NSDictionary *properties = [MobeelizerPropertyUtil classProperties:self.clazz];
+
+            _hasOwner = [[properties allKeys] containsObject:@"owner"];
+            _hasModified = [[properties allKeys] containsObject:@"modified"];
+            _hasConflicted = [[properties allKeys] containsObject:@"conflicted"];
+            _hasDeleted = [[properties allKeys] containsObject:@"deleted"];        
+            
+            if(![[properties objectForKey:@"guid"] isEqualToString:@"NSString"]) {
+                MobeelizerException(@"Missing property", @"Missing property guid with type NSString");
+            }
+            
+            if(self.hasOwner && ![[properties objectForKey:@"owner"] isEqualToString:@"NSString"]) {
+                MobeelizerException(@"Invalid property", @"Invalid property query - wrong type, should be NSString");
+            }
+            
+            if(self.hasModified && ![[properties objectForKey:@"modified"] isEqualToString:@"c"]) {
+                MobeelizerException(@"Invalid property", @"Invalid property modified - wrong type, should be BOOL");
+            }
+            
+            if(self.hasDeleted && ![[properties objectForKey:@"deleted"] isEqualToString:@"c"]) {
+                MobeelizerException(@"Invalid property", @"Invalid property deleted - wrong type, should be BOOL");
+            }
+            
+            if(self.hasConflicted && ![[properties objectForKey:@"conflicted"] isEqualToString:@"c"]) {
+                MobeelizerException(@"Invalid property", @"Invalid property conflicted - wrong type, should be BOOL");
+            }
+            
+            for(MobeelizerFieldDefinition *field in _fields) {
+                NSString *fieldType = [properties valueForKey:field.name];
+                
+                if(fieldType == nil || ![field.supportedCTypes containsObject:fieldType]) {
+                    MobeelizerException(@"Missing property", @"Missing property %@ with type %@", field.name, field.supportedTypes)
+                    return nil;
+                }
+                
+                field.cType = fieldType;        
+            }
         }
     }
     

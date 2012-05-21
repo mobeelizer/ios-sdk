@@ -219,7 +219,7 @@
 }
 
 - (id) convertJsonToObject:(NSDictionary *)json {
-    id object = [[self.clazz alloc] init];
+    id object = self.clazz == nil ? [NSMutableDictionary dictionary] : [[self.clazz alloc] init];
     
     [object setValue:[json valueForKey:@"guid"] forKey:@"guid"];
     
@@ -275,7 +275,7 @@
 }
 
 - (id) convertMapToObject:(NSDictionary *)row {
-    id object = [[self.clazz alloc] init];
+    id object = self.clazz == nil ? [NSMutableDictionary dictionary] : [[self.clazz alloc] init];
     
     [object setValue:[row valueForKey:@"_guid"] forKey:@"guid"];
     
