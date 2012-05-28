@@ -95,6 +95,10 @@
             [row setValue:[self getColumnFromStatement:statement onPosition:position] forKey:name];
         }
         
+        if(sqlite3_step(statement) == SQLITE_ROW) {
+            MobeelizerException(@"Error while executing query", @"Unique result expected: %@", query);
+        }
+        
         return row;
     } @finally {
         if(statement != nil) {

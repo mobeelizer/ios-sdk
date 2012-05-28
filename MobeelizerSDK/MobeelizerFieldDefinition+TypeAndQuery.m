@@ -114,6 +114,10 @@
     return @"";
 }
 
+- (NSString *)dictionaryCType {
+    return @"";
+}
+
 - (void)validateTypeField:(id)object forErrors:(MobeelizerErrors *)errors {
     // empty
 }

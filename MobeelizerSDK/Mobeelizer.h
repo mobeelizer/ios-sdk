@@ -153,7 +153,7 @@ typedef enum {
 ///---------------------------------------------------------------------------------------
 
 /**
- * Initializer Mobeelizer. Invoke it immediately after launching the application (didFinishLaunchingWithOptions).
+ * Initializer Mobeelizer. Invoke it immediately after launching the application (didFinishLaunchingWithOptions). 
  */
 + (void)create;
 

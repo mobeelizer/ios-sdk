@@ -280,6 +280,16 @@ typedef enum {
 + (MobeelizerCriterion *)field:(NSString *)field belongsToEntityWithClass:(Class) clazz withGuid:(NSString *)guid;
 
 /**
+ * Create criterion that checks if field is equal to the entity for the given model and guid.
+ *
+ * @param field The field.
+ * @param clazz The class of related entity.
+ * @param guid The guid of related entity.
+ * @return The criterion.
+ */
++ (MobeelizerCriterion *)field:(NSString *)field belongsToEntityWithModel:(NSString *)model withGuid:(NSString *)guid;
+
+/**
  * Create criterion that checks if field is equal to the given entity.
  *
  * @param field The field.

@@ -29,6 +29,8 @@
 
 - (NSMutableArray *)getErrorsArrayForField:(NSString *)field;
 
+- (NSMutableArray *)getOrCreateErrorsArrayForField:(NSString *)field;
+
 @end
 
 @implementation MobeelizerErrors
@@ -47,18 +49,29 @@
     
     if(errors == nil) {
         errors = [NSMutableArray array];
+    }
+    
+    return errors;
+}
+
+- (NSMutableArray *)getOrCreateErrorsArrayForField:(NSString *)theField {
+    NSMutableArray *errors = [self.errorsMap valueForKey:theField];
+    
+    if(errors == nil) {
+        errors = [NSMutableArray array];
         [self.errorsMap setValue:errors forKey:theField];
     }
     
     return errors;
 }
 
+
 - (void)addGlobalError:(MobeelizerError *)theError {
-    [[self getErrorsArrayForField:GLOBAL_FIELD] addObject:theError];
+    [[self getOrCreateErrorsArrayForField:GLOBAL_FIELD] addObject:theError];
 }
 
 - (void)addError:(MobeelizerError *)theError forField:(NSString *)theField {
-    [[self getErrorsArrayForField:theField] addObject:theError];
+    [[self getOrCreateErrorsArrayForField:theField] addObject:theError];
 }
 
 - (BOOL)isValid {
@@ -77,8 +90,6 @@
     return [self getErrorsArrayForField:field];
 }
 
-# ifdef DEBUG
-
 - (NSString *)description {
     NSMutableString *string = [NSMutableString string];
     for(NSString *key in self.errorsMap.keyEnumerator) {
@@ -86,13 +97,11 @@
             if([key isEqualToString:@""]) {
                 [string appendFormat:@"[%@ : %@]", key, [error message]];
             } else {
-                [string appendString:[error message]];
+                [string appendFormat:@"[%@]", [error message]];
             }
         }        
     }
     return string;
 }
-
-# endif
 
 @end

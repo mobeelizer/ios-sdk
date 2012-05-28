@@ -28,7 +28,7 @@
 - (id)initWithAttributes:(NSDictionary *)attributes andModelPrefix:(NSString *)modelPrefix {    
     NSString* nameAttribute = [attributes objectForKey:@"name"];
     NSString* name = [nameAttribute stringByReplacingCharactersInRange:NSMakeRange(0,1) withString:[[nameAttribute substringToIndex:1] uppercaseString]];
-    return [self initWithName:[attributes objectForKey:@"name"] andClassName:[NSString stringWithFormat:@"%@%@", modelPrefix, name]]; 
+    return [self initWithName:[attributes objectForKey:@"name"] andClassName:(modelPrefix == nil ? nil : [NSString stringWithFormat:@"%@%@", modelPrefix, name])]; 
 }
 
 - (MobeelizerModelDefinition *)modelForRole:(NSString *)role {    
