@@ -119,6 +119,10 @@
     }
 }
 
+- (NSString *)dictionaryCType {
+    return @"NSNumber";
+}
+
 - (void)validateTypeField:(id)object forErrors:(MobeelizerErrors *)errors {
     NSNumber *value = [object valueForKey:self.name];
     

@@ -52,8 +52,19 @@
     if (self = [super init]) {
         _modelPrefix = thePrefix;
         
-        NSArray *pathComponents = [theDefinitionAsset componentsSeparatedByString:@"."];        
-        NSString *path = [[NSBundle mainBundle] pathForResource:[pathComponents objectAtIndex:0] ofType:[pathComponents objectAtIndex:1]];
+        NSArray *fileComponents = [theDefinitionAsset componentsSeparatedByString:@"."];        
+        
+        NSArray *pathComponents = [[fileComponents objectAtIndex:0] componentsSeparatedByString:@"/"];        
+        
+        NSString *path = nil;
+        
+        if([pathComponents count] == 1) {
+            path = [[NSBundle mainBundle] pathForResource:[pathComponents objectAtIndex:0] ofType:[fileComponents objectAtIndex:1]];
+        } else {
+            path = [[NSBundle mainBundle] pathForResource:[pathComponents objectAtIndex:([pathComponents count] - 1)] ofType:[fileComponents objectAtIndex:1] inDirectory:[[pathComponents subarrayWithRange:NSMakeRange(0, [pathComponents count] - 1)] componentsJoinedByString:@"/"]];
+        }
+        
+        MobeelizerLog(@"Application definition: %@", path);
         
         NSError *error;
         

@@ -89,6 +89,10 @@
     }
 }
 
+- (NSString *)dictionaryCType {
+    return @"NSNumber";
+}
+
 - (NSString *)supportedTypes {
     if(self.required) {
         return @"NSNumber, BOOL, Boolean, char";

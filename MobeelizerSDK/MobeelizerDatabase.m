@@ -45,6 +45,7 @@
 @property (nonatomic, strong) NSMutableDictionary *modelsByClazz;
 
 - (MobeelizerModelDefinition *)modelForClass:(Class)clazz;
+- (MobeelizerModelDefinition *)modelForName:(NSString *)model;
 
 @end
 
@@ -76,7 +77,10 @@
         
         for(MobeelizerModelDefinition *model in modelsArray) {
             [self.modelsByName setValue:model forKey:model.name];
-            [self.modelsByClazz setValue:model forKey:NSStringFromClass(model.clazz)];                
+            
+            if(model.clazz != nil) {
+                [self.modelsByClazz setValue:model forKey:NSStringFromClass(model.clazz)];                
+            }
             
             if(initializationRequired) {
                 [self.database execQuery:[NSString stringWithFormat:@"DROP TABLE IF EXISTS %@", model.name]];
@@ -111,22 +115,46 @@
     return model;
 }
 
-- (MobeelizerModelDefinition *)model:(NSString *)name {
-    return [self.modelsByName valueForKey:name];
+- (MobeelizerModelDefinition *)modelForName:(NSString *)name {
+    MobeelizerModelDefinition *model = [self.modelsByName valueForKey:name];
+    
+    if(model == nil) {
+        MobeelizerException(@"Model not found", @"Cannot find model for name: %@", name);
+    }
+    
+    return model;
+}
+
+- (MobeelizerModelDefinition *)model:(NSString *)model {
+    return [self.modelsByName valueForKey:model];
 }
 
 - (void)removeAll:(Class)clazz {
     [self.database execQuery:[[self modelForClass:clazz] queryForDeleteAll]];
 }
 
+- (void)removeAllByModel:(NSString *)model {
+    [self.database execQuery:[[self modelForName:model] queryForDeleteAll]];
+}
+
 - (void)remove:(Class)clazz withGuid:(NSString *)guid {
     [self.database execQuery:[[self modelForClass:clazz] queryForDelete] withParams:[NSArray arrayWithObject:guid]];
 }
 
+- (void)removeByModel:(NSString *)model withGuid:(NSString *)guid {
+    [self.database execQuery:[[self modelForName:model] queryForDelete] withParams:[NSArray arrayWithObject:guid]];
+}
+
 - (void)remove:(id)object {
-    MobeelizerModelDefinition *model = [self modelForClass:[object class]];
+    MobeelizerModelDefinition *model = nil;
     
-    [self.database execQuery:[[self modelForClass:model.clazz] queryForDelete] withParams:[NSArray arrayWithObject:[object valueForKey:@"guid"]]];
+    if([object isKindOfClass:[NSDictionary class]]) {
+        model = [self modelForName:[object valueForKey:@"model"]];
+    } else {
+        model = [self modelForClass:[object class]];
+    }
+    
+    [self.database execQuery:[model queryForDelete] withParams:[NSArray arrayWithObject:[object valueForKey:@"guid"]]];
     
     [model setAsDeleted:object];
 }
@@ -139,6 +167,14 @@
     return [count intValue] > 0;
 }
 
+- (BOOL)existsByModel:(NSString *)modelName withGuid:(NSString *)guid {
+    MobeelizerModelDefinition *model = [self modelForName:modelName];
+    
+    NSNumber *count = [self execQuery:[model queryForExists] withParams:[NSArray arrayWithObject:guid] withModel:model withSelector:@selector(execQueryForSingleResult:withParams:)];    
+    
+    return [count intValue] > 0;    
+}
+
 - (NSUInteger)count:(Class)clazz {
     MobeelizerModelDefinition *model = [self modelForClass:clazz];
     
@@ -147,14 +183,34 @@
     return [count intValue];
 }
 
-- (MobeelizerErrors *)save:(id)object {    
-    MobeelizerModelDefinition *model = [self modelForClass:[object class]];
+- (NSUInteger)countByModel:(NSString *)modelName {
+    MobeelizerModelDefinition *model = [self modelForName:modelName];
+    
+    NSNumber *count = [self execQuery:[model queryForCount] withParams:[NSArray array] withModel:model withSelector:@selector(execQueryForSingleResult:withParams:)];    
+    
+    return [count intValue];    
+}
+
+- (MobeelizerErrors *)save:(id)object {        
+    MobeelizerModelDefinition *model = nil;
+    
+    if([object isKindOfClass:[NSDictionary class]]) {
+        model = [self modelForName:[object valueForKey:@"model"]];
+    } else {
+        model = [self modelForClass:[object class]];
+    }
         
     MobeelizerErrors *errors = [model validate:object];
 
     NSString *guid = [object valueForKey:@"guid"];
     
-    BOOL exists = (guid != nil) && [self exists:[object class] withGuid:guid]; 
+    BOOL exists = false;
+    
+    if([object isKindOfClass:[NSDictionary class]]) {
+        exists = (guid != nil) && [self existsByModel:[object valueForKey:@"model"] withGuid:guid]; 
+    } else {
+        exists = (guid != nil) && [self exists:[object class] withGuid:guid]; 
+    }
     
     if(![errors isValid]) {
         return errors;
@@ -178,14 +234,30 @@
     return [self execQuery:[model queryForGet] withParams:[NSArray arrayWithObject:guid] withModel:model withSelector:@selector(execQueryForRow:withParams:)];
 }
 
+- (id)getByModel:(NSString *)modelName withGuid:(NSString *)guid {
+    MobeelizerModelDefinition *model = [self modelForName:modelName];
+    
+    return [self execQuery:[model queryForGet] withParams:[NSArray arrayWithObject:guid] withModel:model withSelector:@selector(execQueryForRow:withParams:)];    
+}
+
 - (NSArray *)list:(Class)clazz {
     MobeelizerModelDefinition *model = [self modelForClass:clazz];
     
     return [self execQuery:[model queryForList] withParams:[NSArray array] withModel:model withSelector:@selector(execQueryForList:withParams:)];
 }
 
+- (NSArray *)listByModel:(NSString *)modelName {
+    MobeelizerModelDefinition *model = [self modelForName:modelName];
+    
+    return [self execQuery:[model queryForList] withParams:[NSArray array] withModel:model withSelector:@selector(execQueryForList:withParams:)];
+}
+
 - (MobeelizerCriteriaBuilder *)find:(Class)clazz {
     return [[MobeelizerCriteriaBuilder alloc] initWithDatabase:self andModel:[self modelForClass:clazz]];
+}
+
+- (MobeelizerCriteriaBuilder *)findByModel:(NSString *)model {
+    return [[MobeelizerCriteriaBuilder alloc] initWithDatabase:self andModel:[self modelForName:model]];
 }
 
 - (void)lockModifiedFlag {
@@ -271,13 +343,23 @@
             if([json valueForKey:@"fields"] == nil) {
                 NSArray *params = [model paramsForUpdateWithoutFields:object withModified:FALSE withDeleted:deleted withConflicted:conflicted];        
                 [localDatabase execQuery:[model queryForUpdateWithoutFields] withParams:params];                
-            } else if(![self exists:[object class] withGuid:[json valueForKey:@"guid"]]) {
-                NSArray *params = [model paramsForInsert:object forGuid:[json valueForKey:@"guid"] forOwner:[json valueForKey:@"owner"] withModified:FALSE withDeleted:deleted withConflicted:conflicted];        
-                [localDatabase execQuery:[model queryForInsert] withParams:params];        
             } else {
-                NSArray *params = [model paramsForUpdate:object withModified:FALSE withDeleted:deleted withConflicted:conflicted];        
-                [localDatabase execQuery:[model queryForUpdate] withParams:params];        
-            }        
+                BOOL exists = false;
+                
+                if([object isKindOfClass:[NSDictionary class]]) {
+                    exists = [self existsByModel:[object valueForKey:@"model"] withGuid:[json valueForKey:@"guid"]]; 
+                } else {
+                    exists = [self exists:[object class] withGuid:[json valueForKey:@"guid"]]; 
+                }
+                
+                if(!exists) {
+                    NSArray *params = [model paramsForInsert:object forGuid:[json valueForKey:@"guid"] forOwner:[json valueForKey:@"owner"] withModified:FALSE withDeleted:deleted withConflicted:conflicted];        
+                    [localDatabase execQuery:[model queryForInsert] withParams:params];        
+                } else {
+                    NSArray *params = [model paramsForUpdate:object withModified:FALSE withDeleted:deleted withConflicted:conflicted];        
+                    [localDatabase execQuery:[model queryForUpdate] withParams:params];        
+                }
+            }
         }
         
         if (isTransactionSuccessful) {

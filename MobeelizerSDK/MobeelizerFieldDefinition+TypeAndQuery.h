@@ -24,6 +24,7 @@
 @interface MobeelizerFieldDefinition (TypeAndQuery)
 
 - (NSArray *)supportedCTypes;
+- (NSString *)dictionaryCType;
 - (NSString *)supportedTypes;
 - (NSString *)queryForCreate;
 - (void)addValueFromObject:(id)object toQueryParams:(NSMutableArray *)params;

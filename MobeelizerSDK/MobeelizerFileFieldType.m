@@ -106,6 +106,10 @@
     return [NSArray arrayWithObject:@"MobeelizerFile"];
 }
 
+- (NSString *)dictionaryCType {
+    return @"MobeelizerFile";
+}
+
 - (NSString *)supportedTypes {
     return @"MobeelizerFile";
 }

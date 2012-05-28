@@ -51,6 +51,11 @@
     return [NSArray arrayWithObjects:@"NSString", nil];
 }
 
+
+- (NSString *)dictionaryCType {
+    return @"NSString";
+}
+
 - (NSString *)supportedTypes {
     return @"NSString";
 }
@@ -60,7 +65,7 @@
     
     MobeelizerDatabase *database = [Mobeelizer database];
     
-    if(![database exists:[[database model:self.referencedModel] clazz] withGuid:value]) {
+    if(![database existsByModel:[[database model:self.referencedModel] name] withGuid:value]) {
         [errors addError:[[MobeelizerError alloc] initWithCode:MobeelizerErrorCodeNotFound andArguments:[NSArray arrayWithObject:value]] forField:self.name];
     }    
 }

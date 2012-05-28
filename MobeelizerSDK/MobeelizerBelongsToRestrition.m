@@ -40,6 +40,14 @@
     return self;      
 }
 
+- (id)initWithField:(NSString *)field andModel:(NSString *)model andGuid:(NSString *)guid {
+    if(self = [super init]) {
+        _field = field;
+        _guid = guid;
+    }
+    return self;      
+}
+
 - (NSString *)addToQuery:(NSMutableArray *)params {
     [params addObject:self.guid];         
     return [NSString stringWithFormat:@"%@ = ?", self.field];
