@@ -137,13 +137,13 @@
     
     switch (matchMode) {
         case MobeelizerMatchModeAnywhere:
-            preparedValue = [NSString stringWithFormat:@"*%@*", preparedValue];
+            preparedValue = [NSString stringWithFormat:@"%%%@%%", preparedValue];
             break;            
         case MobeelizerMatchModeStart:
-            preparedValue = [NSString stringWithFormat:@"*%@", preparedValue];
+            preparedValue = [NSString stringWithFormat:@"%@%%", preparedValue];
             break;
         case MobeelizerMatchModeEnd:
-            preparedValue = [NSString stringWithFormat:@"%@*", preparedValue];
+            preparedValue = [NSString stringWithFormat:@"%%%@", preparedValue];
             break;
         case MobeelizerMatchModeExact:
             break;

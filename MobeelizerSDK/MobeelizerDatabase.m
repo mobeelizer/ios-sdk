@@ -191,7 +191,7 @@
     return [count intValue];    
 }
 
-- (MobeelizerErrors *)save:(id)object {    
+- (MobeelizerErrors *)save:(id)object {        
     MobeelizerModelDefinition *model = nil;
     
     if([object isKindOfClass:[NSDictionary class]]) {
@@ -343,13 +343,23 @@
             if([json valueForKey:@"fields"] == nil) {
                 NSArray *params = [model paramsForUpdateWithoutFields:object withModified:FALSE withDeleted:deleted withConflicted:conflicted];        
                 [localDatabase execQuery:[model queryForUpdateWithoutFields] withParams:params];                
-            } else if(![self exists:[object class] withGuid:[json valueForKey:@"guid"]]) {
-                NSArray *params = [model paramsForInsert:object forGuid:[json valueForKey:@"guid"] forOwner:[json valueForKey:@"owner"] withModified:FALSE withDeleted:deleted withConflicted:conflicted];        
-                [localDatabase execQuery:[model queryForInsert] withParams:params];        
             } else {
-                NSArray *params = [model paramsForUpdate:object withModified:FALSE withDeleted:deleted withConflicted:conflicted];        
-                [localDatabase execQuery:[model queryForUpdate] withParams:params];        
-            }        
+                BOOL exists = false;
+                
+                if([object isKindOfClass:[NSDictionary class]]) {
+                    exists = [self existsByModel:[object valueForKey:@"model"] withGuid:[json valueForKey:@"guid"]]; 
+                } else {
+                    exists = [self exists:[object class] withGuid:[json valueForKey:@"guid"]]; 
+                }
+                
+                if(!exists) {
+                    NSArray *params = [model paramsForInsert:object forGuid:[json valueForKey:@"guid"] forOwner:[json valueForKey:@"owner"] withModified:FALSE withDeleted:deleted withConflicted:conflicted];        
+                    [localDatabase execQuery:[model queryForInsert] withParams:params];        
+                } else {
+                    NSArray *params = [model paramsForUpdate:object withModified:FALSE withDeleted:deleted withConflicted:conflicted];        
+                    [localDatabase execQuery:[model queryForUpdate] withParams:params];        
+                }
+            }
         }
         
         if (isTransactionSuccessful) {

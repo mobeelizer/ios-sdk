@@ -69,7 +69,7 @@
         [ordersBuilder addObject:[order addToQuery]];
     }
     
-    NSString *query = [NSString stringWithFormat:@"SELECT %@ FROM %@ WHERE (%@)", (count ? @"count(*)" : ([columnsBuilder count] == 0 ? @"*" : [columnsBuilder componentsJoinedByString:@", "])), self.model.name, [selectionsBuilder componentsJoinedByString:@") AND ("]];
+    NSString *query = [NSString stringWithFormat:@"SELECT %@ FROM %@ WHERE (%@)", ([columnsBuilder count] == 0 ? @"*" : [columnsBuilder componentsJoinedByString:@", "]), self.model.name, [selectionsBuilder componentsJoinedByString:@") AND ("]];
     
     if([ordersBuilder count] > 0 && !count) {
         query = [query stringByAppendingFormat:@" ORDER BY %@", [ordersBuilder componentsJoinedByString:@", "]];
@@ -77,6 +77,10 @@
     
     if(self.maxResults > 0) {
         query = [query stringByAppendingFormat:@" LIMIT %d OFFSET %d", self.maxResults, self.firstResult];
+    }
+    
+    if(count) {
+        query = [NSString stringWithFormat:@"SELECT count(*) FROM (%@)", query];
     }
     
     return [self.database execQuery:query withParams:params withModel:self.model withSelector:selector];

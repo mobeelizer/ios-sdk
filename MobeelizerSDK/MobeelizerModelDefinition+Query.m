@@ -221,6 +221,10 @@
 - (id) convertJsonToObject:(NSDictionary *)json {
     id object = self.clazz == nil ? [NSMutableDictionary dictionary] : [[self.clazz alloc] init];
     
+    if(self.clazz == nil) {
+        [object setValue:[json valueForKey:@"model"] forKey:@"model"];   
+    }
+    
     [object setValue:[json valueForKey:@"guid"] forKey:@"guid"];
     
     if(self.hasOwner) {
@@ -276,6 +280,10 @@
 
 - (id) convertMapToObject:(NSDictionary *)row {
     id object = self.clazz == nil ? [NSMutableDictionary dictionary] : [[self.clazz alloc] init];
+    
+    if(self.clazz == nil) {
+        [object setValue:self.name forKey:@"model"];   
+    }
     
     [object setValue:[row valueForKey:@"_guid"] forKey:@"guid"];
     
