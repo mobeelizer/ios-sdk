@@ -30,8 +30,8 @@
 #import "MobeelizerDeviceIdentifierUtil.h"
 #import "MobeelizerSyncManager.h"
 
-#define DEFAULT_TEST_URL @"http://cloud.mobeelizer.com/sync"
-#define DEFAULT_PRODUCTION_URL @"http://cloud.mobeelizer.com/sync"
+#define DEFAULT_TEST_URL @"https://cloud.mobeelizer.com/sync"
+#define DEFAULT_PRODUCTION_URL @"https://cloud.mobeelizer.com/sync"
 
 #define META_DEVICE @"device"
 #define META_URL @"url"
