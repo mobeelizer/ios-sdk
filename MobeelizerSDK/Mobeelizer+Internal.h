@@ -53,6 +53,7 @@
 @property (nonatomic, readonly, strong) NSURL *url;
 @property (nonatomic, readonly) NSString *instance;
 @property (nonatomic, readonly) NSString *user;
+@property (nonatomic, readonly) NSString *group;
 @property (nonatomic, readonly) NSString *role;
 @property (nonatomic, readonly) NSString *instanceGuid;
 @property (nonatomic, readonly, strong) NSString *mode;

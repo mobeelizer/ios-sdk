@@ -25,6 +25,7 @@
 
 @property (nonatomic, strong) NSString *instance;
 @property (nonatomic, strong) NSString *user;
+@property (nonatomic, strong) NSString *group;
 @property (nonatomic, strong) NSString *role;
 @property (nonatomic, strong) NSString *instanceGuid;
 @property (nonatomic) BOOL initialSyncRequired;

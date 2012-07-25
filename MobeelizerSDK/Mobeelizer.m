@@ -72,7 +72,7 @@
 @implementation Mobeelizer
 
 @synthesize mode=_mode, device=_device, deviceIdentifier=_deviceIdentifier, url=_url, database=_database, connectionManager=_connectionManager, definitionManager=_definitionManager, internalDatabase=_internalDatabase, syncManager=_syncManager, fileManager=_fileManager, multitaskingSupported=_multitaskingSupported;
-@dynamic vendor, application, versionDigest, instance, user, role, instanceGuid;
+@dynamic vendor, application, versionDigest, instance, user, group, role, instanceGuid;
 
 static Mobeelizer *mobeelizer = nil;
 
@@ -192,6 +192,10 @@ static Mobeelizer *mobeelizer = nil;
 
 - (NSString *)user {
     return self.connectionManager.user;
+}
+
+- (NSString *)group {
+    return self.connectionManager.group;
 }
 
 - (NSString *)role {

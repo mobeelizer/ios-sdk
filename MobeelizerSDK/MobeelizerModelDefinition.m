@@ -28,7 +28,7 @@
 
 @implementation MobeelizerModelDefinition
 
-@synthesize name=_name, clazz=_clazz, fields=_fields, credentials=_credentials, credential=_credential, clazzName=_clazzName, hasOwner=_hasOwner, hasDeleted=_hasDeleted, hasModified=_hasModified, hasConflicted=_hasConflicted;
+@synthesize name=_name, clazz=_clazz, fields=_fields, credentials=_credentials, credential=_credential, clazzName=_clazzName, hasOwner=_hasOwner, hasGroup=_hasGroup, hasDeleted=_hasDeleted, hasModified=_hasModified, hasConflicted=_hasConflicted;
 
 - (id)initWithName:(NSString *)name andClassName:(NSString *)clazzName {
     if(self = [super init]) {
@@ -53,6 +53,7 @@
         if(self.clazzName == nil) {
             _clazz = nil;
             _hasOwner = true;
+            _hasGroup = true;            
             _hasModified = true;
             _hasConflicted = true;
             _hasDeleted = true;
@@ -70,6 +71,7 @@
             NSDictionary *properties = [MobeelizerPropertyUtil classProperties:self.clazz];
 
             _hasOwner = [[properties allKeys] containsObject:@"owner"];
+            _hasGroup = [[properties allKeys] containsObject:@"group"];            
             _hasModified = [[properties allKeys] containsObject:@"modified"];
             _hasConflicted = [[properties allKeys] containsObject:@"conflicted"];
             _hasDeleted = [[properties allKeys] containsObject:@"deleted"];        
@@ -79,7 +81,11 @@
             }
             
             if(self.hasOwner && ![[properties objectForKey:@"owner"] isEqualToString:@"NSString"]) {
-                MobeelizerException(@"Invalid property", @"Invalid property query - wrong type, should be NSString");
+                MobeelizerException(@"Invalid property", @"Invalid property owner - wrong type, should be NSString");
+            }
+            
+            if(self.hasGroup && ![[properties objectForKey:@"group"] isEqualToString:@"NSString"]) {
+                MobeelizerException(@"Invalid property", @"Invalid property group - wrong type, should be NSString");
             }
             
             if(self.hasModified && ![[properties objectForKey:@"modified"] isEqualToString:@"c"]) {

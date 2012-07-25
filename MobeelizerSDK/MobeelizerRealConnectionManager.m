@@ -70,6 +70,7 @@
         } else {
             MobeelizerLog(@"Login with role '%@' from database successful.", self.role);
             self.role = [roleAndInstanceGuid objectForKey:@"role"];
+            self.group = [[self.role componentsSeparatedByString:@"-"] objectAtIndex:0];
             self.instanceGuid = [roleAndInstanceGuid objectForKey:@"instanceGuid"];
             return MobeelizerLoginStatusOk; 
         }
@@ -97,6 +98,7 @@
         } else {
             MobeelizerLog(@"Login with role '%@' from database successful.", self.role);
             self.role = [roleAndInstanceGuid objectForKey:@"role"];
+            self.group = [[self.role componentsSeparatedByString:@"-"] objectAtIndex:0];
             self.instanceGuid = [roleAndInstanceGuid objectForKey:@"instanceGuid"];
             return MobeelizerLoginStatusOk; 
         }
@@ -115,6 +117,7 @@
     
     if([status isEqualToString:@"OK"]) {
         self.role = [[json objectForKey:@"content"] objectForKey:@"role"];        
+        self.group = [[self.role componentsSeparatedByString:@"-"] objectAtIndex:0];
         self.instanceGuid = [[json objectForKey:@"content"] objectForKey:@"instanceGuid"];        
         self.initialSyncRequired = [self.mobeelizer.internalDatabase isInitialSyncRequiredForInstance:self.instance andInstanceGuid:self.instanceGuid andUser:self.user];
         

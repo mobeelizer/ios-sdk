@@ -23,14 +23,14 @@
 #import "MobeelizerFieldDefinition+TypeAndQuery.h"
 #import "MobeelizerGuidUtil.h"
 
-#define SQL_CREATE @"CREATE TABLE %@ (_guid TEXT(36) PRIMARY KEY, _owner TEXT(255) NOT NULL, _deleted INTEGER(1) NOT NULL DEFAULT 0, _modified INTEGER(1) NOT NULL DEFAULT 0, _conflicted INTEGER(1) NOT NULL DEFAULT 0%@)"
+#define SQL_CREATE @"CREATE TABLE %@ (_guid TEXT(36) PRIMARY KEY, _owner TEXT(255) NOT NULL, _group TEXT(255) NOT NULL, _deleted INTEGER(1) NOT NULL DEFAULT 0, _modified INTEGER(1) NOT NULL DEFAULT 0, _conflicted INTEGER(1) NOT NULL DEFAULT 0%@)"
 #define SQL_DELETE_ALL @"UPDATE %@ SET _deleted = 1, _modified = 1 WHERE _deleted = 0"
 #define SQL_DELETE @"UPDATE %@ SET _deleted = 1, _modified = 1 WHERE _guid = ? AND _deleted = 0"
 #define SQL_COUNT @"SELECT count(*) FROM %@ WHERE _deleted = 0"
 #define SQL_EXISTS @"SELECT count(*) FROM %@ WHERE _guid = ? AND _deleted = 0"
 #define SQL_LIST @"SELECT * FROM %@ WHERE _deleted = 0"
 #define SQL_GET @"SELECT * FROM %@ WHERE _guid = ? AND _deleted = 0"
-#define SQL_INSERT @"INSERT INTO %@ (_guid, _owner, _modified, _deleted, _conflicted%@) values (?, ?, ?, ?, ?%@)"
+#define SQL_INSERT @"INSERT INTO %@ (_guid, _owner, _group, _modified, _deleted, _conflicted%@) values (?, ?, ?, ?, ?, ?%@)"
 #define SQL_UPDATE @"UPDATE %@ SET _modified = ?, _deleted = ?, _conflicted = ?%@ WHERE _guid = ?"
 #define SQL_UPDATE_WITHOUT_FIELDS @"UPDATE %@ SET _modified = ?, _deleted = ?, _conflicted = ? WHERE _guid = ?"
 #define SQL_SIMPLE_UPDATE @"UPDATE %@ SET _modified = 1%@ WHERE _guid = ? AND _deleted = 0"
@@ -115,7 +115,7 @@
     return [NSString stringWithFormat:SQL_LIST, self.name];
 }
 
-- (NSArray *) paramsForInsert:(id)object forGuid:(NSString *)guid forOwner:(NSString *)owner withModified:(BOOL)modified withDeleted:(BOOL)deleted withConflicted:(BOOL)conflicted {
+- (NSArray *) paramsForInsert:(id)object forGuid:(NSString *)guid forOwner:(NSString *)owner withGroup:(NSString *)group withModified:(BOOL)modified withDeleted:(BOOL)deleted withConflicted:(BOOL)conflicted {
     NSMutableArray *array = [NSMutableArray array];
     
     if(guid == nil) {
@@ -126,6 +126,10 @@
     
     if(self.hasOwner) {
         [object setValue:owner forKey:@"owner"];
+    }
+
+    if(self.hasGroup) {
+        [object setValue:group forKey:@"group"];
     }
     
     if(self.hasModified) {    
@@ -141,7 +145,8 @@
     }
 
     [array addObject:guid];    
-    [array addObject:owner];    
+    [array addObject:owner]; 
+    [array addObject:group]; 
     [array addObject:[NSNumber numberWithBool:modified]];
     [array addObject:[NSNumber numberWithBool:deleted]];
     [array addObject:[NSNumber numberWithBool:conflicted]];
@@ -231,6 +236,10 @@
         [object setValue:[json valueForKey:@"owner"] forKey:@"owner"];
     }
     
+    if(self.hasGroup) {
+        [object setValue:[json valueForKey:@"group"] forKey:@"group"];
+    }
+    
     if(self.hasDeleted) {
         [object setValue:[NSNumber numberWithBool:[[[json valueForKey:@"fields"] valueForKey:@"s_deleted"] isEqualToString:@"true"]] forKey:@"deleted"];
     }
@@ -256,6 +265,7 @@
     [json setValue:self.name forKey:@"model"];
     [json setValue:[row valueForKey:@"_guid"] forKey:@"guid"];
     [json setValue:[row valueForKey:@"_owner"] forKey:@"owner"];
+    [json setValue:[row valueForKey:@"_group"] forKey:@"group"];
     
     NSMutableDictionary *jsonFields = [NSMutableDictionary dictionary];
     [jsonFields setValue:([[row valueForKey:@"_deleted"] boolValue] ? @"true" : @"false") forKey:@"s_deleted"];
@@ -289,6 +299,10 @@
     
     if(self.hasOwner) {
         [object setValue:[row valueForKey:@"_owner"] forKey:@"owner"];
+    }
+    
+    if(self.hasGroup) {
+        [object setValue:[row valueForKey:@"_group"] forKey:@"group"];
     }
     
     if(self.hasDeleted) {

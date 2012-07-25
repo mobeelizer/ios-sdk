@@ -217,7 +217,7 @@
     }
     
     if(!exists) {
-        NSArray *params = [model paramsForInsert:object forGuid:nil forOwner:self.mobeelizer.user withModified:TRUE withDeleted:FALSE withConflicted:FALSE];
+        NSArray *params = [model paramsForInsert:object forGuid:nil forOwner:self.mobeelizer.user withGroup:self.mobeelizer.group withModified:TRUE withDeleted:FALSE withConflicted:FALSE];
         [self.database execQuery:[model queryForInsert] withParams:params];
     } else {
         NSArray *params = [model paramsForSimpleUpdate:object];
@@ -353,7 +353,7 @@
                 }
                 
                 if(!exists) {
-                    NSArray *params = [model paramsForInsert:object forGuid:[json valueForKey:@"guid"] forOwner:[json valueForKey:@"owner"] withModified:FALSE withDeleted:deleted withConflicted:conflicted];        
+                    NSArray *params = [model paramsForInsert:object forGuid:[json valueForKey:@"guid"] forOwner:[json valueForKey:@"owner"] withGroup:[json valueForKey:@"group"] withModified:FALSE withDeleted:deleted withConflicted:conflicted];        
                     [localDatabase execQuery:[model queryForInsert] withParams:params];        
                 } else {
                     NSArray *params = [model paramsForUpdate:object withModified:FALSE withDeleted:deleted withConflicted:conflicted];        

@@ -79,6 +79,14 @@ typedef enum {
 + (MobeelizerCriterion *)ownerEq:(NSString *)owner;
 
 /**
+ * Create criterion that checks if group is equal to the given value.
+ *
+ * @param group The group.
+ * @return The criterion.
+ */
++ (MobeelizerCriterion *)groupEq:(NSString *)group;
+
+/**
  * Create criterion that checks if guid isn't equal to the given value.
  *
  * @param guid The guid.
@@ -93,6 +101,14 @@ typedef enum {
  * @return The criterion.
  */
 + (MobeelizerCriterion *)ownerNe:(NSString *)owner;
+
+/**
+ * Create criterion that checks if group isn't equal to the given value.
+ *
+ * @param group The group.
+ * @return The criterion.
+ */
++ (MobeelizerCriterion *)groupNe:(NSString *)group;
 
 /**
  * Create criterion that checks if entity is conflicted.

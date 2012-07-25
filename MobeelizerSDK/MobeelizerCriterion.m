@@ -86,19 +86,33 @@
     }
     return [[MobeelizerOperatorRestriction alloc] initWithField:@"_owner" andOperator:@"=" andValue:owner];
 }
- 
- + (MobeelizerCriterion *)guidNe:(NSString *)guid {
+
++ (MobeelizerCriterion *)groupEq:(NSString *)group {
+    if (group == nil) {
+        return [MobeelizerCriterion fieldIsNull:@"_group"];
+    }
+    return [[MobeelizerOperatorRestriction alloc] initWithField:@"_group" andOperator:@"=" andValue:group];
+}
+
++ (MobeelizerCriterion *)guidNe:(NSString *)guid {
      if (guid == nil) {
          return [MobeelizerCriterion fieldIsNotNull:@"_guid"];
      }
      return [[MobeelizerOperatorRestriction alloc] initWithField:@"_guid" andOperator:@"!=" andValue:guid];
 }
- 
+
 + (MobeelizerCriterion *)ownerNe:(NSString *)owner {
     if (owner == nil) {
         return [MobeelizerCriterion fieldIsNotNull:@"_owner"];
     }
     return [[MobeelizerOperatorRestriction alloc] initWithField:@"_owner" andOperator:@"!=" andValue:owner];
+}
+
++ (MobeelizerCriterion *)groupNe:(NSString *)group {
+    if (group == nil) {
+        return [MobeelizerCriterion fieldIsNotNull:@"_group"];
+    }
+    return [[MobeelizerOperatorRestriction alloc] initWithField:@"_group" andOperator:@"!=" andValue:group];
 }
 
 + (MobeelizerCriterion *)isConflicted {

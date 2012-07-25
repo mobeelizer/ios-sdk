@@ -33,7 +33,7 @@
 - (NSString *) queryForSimpleUpdate;
 - (NSString *) queryForGet;
 - (NSString *) queryForList;
-- (NSArray *) paramsForInsert:(id)object forGuid:(NSString *)guid forOwner:(NSString *)user withModified:(BOOL)modified withDeleted:(BOOL)deleted withConflicted:(BOOL)conflicted;
+- (NSArray *) paramsForInsert:(id)object forGuid:(NSString *)guid forOwner:(NSString *)user withGroup:(NSString *)group withModified:(BOOL)modified withDeleted:(BOOL)deleted withConflicted:(BOOL)conflicted;
 - (NSArray *) paramsForUpdate:(id)object withModified:(BOOL)modified withDeleted:(BOOL)deleted withConflicted:(BOOL)conflicted;
 - (NSArray *) paramsForUpdateWithoutFields:(id)object withModified:(BOOL)modified withDeleted:(BOOL)deleted withConflicted:(BOOL)conflicted;
 - (NSArray *) paramsForSimpleUpdate:(id)object;

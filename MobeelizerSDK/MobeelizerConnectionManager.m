@@ -22,7 +22,7 @@
 
 @implementation MobeelizerConnectionManager
 
-@synthesize instance=_instance, initialSyncRequired=_initialSyncRequired, role=_role, instanceGuid=_instanceGuid, user=_user;
+@synthesize instance=_instance, initialSyncRequired=_initialSyncRequired, role=_role, instanceGuid=_instanceGuid, user=_user, group=_group;
 
 - (MobeelizerLoginStatus)loginToInstance:(NSString *)instance withUser:(NSString *)user andPassword:(NSString *)password {
     return MobeelizerLoginStatusOtherFailure;
@@ -30,6 +30,7 @@
 
 - (void)logout {
     _user = nil;
+    _group = nil;    
     _instanceGuid = nil;
     _instance = nil;
     _role = nil;

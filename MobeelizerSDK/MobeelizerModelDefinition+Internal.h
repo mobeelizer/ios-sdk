@@ -27,6 +27,7 @@
 @property (nonatomic, strong) NSMutableDictionary *credentials;
 
 @property (nonatomic) BOOL hasOwner;
+@property (nonatomic) BOOL hasGroup;
 @property (nonatomic) BOOL hasModified;
 @property (nonatomic) BOOL hasDeleted;
 @property (nonatomic) BOOL hasConflicted;
