@@ -19,8 +19,8 @@
 // 
 
 #import "MobeelizerDatabase+Internal.h"
-#import "MobeelizerErrors.h"
-#import "MobeelizerError.h"
+#import "MobeelizerErrors+Internal.h"
+#import "MobeelizerError+Internal.h"
 #import "MobeelizerCriteriaBuilder+Internal.h"
 #import "MobeelizerModelDefinition+Query.h"
 #import "MobeelizerModelDefinition+Validate.h"
@@ -36,6 +36,8 @@
 #define SQL_DELETE_FROM_SYNC @"DELETE FROM %@ WHERE _guid = ?"
 #define SQL_CLEAR_TABLE @"DELETE FROM %@"
 #define SQL_SYNC_SELECT_TABLE @"SELECT * FROM %@ WHERE _modified = 2"
+#define SQL_SELECT_OWNERS_AND_GROUPS @"SELECT _owner, _group FROM %@ WHERE _deleted = 0"
+#define SQL_SELECT_OWNER_AND_GROUP @"SELECT _owner, _group FROM %@ WHERE _guid = ? AND _deleted = 0"
 
 @interface MobeelizerDatabase ()
 
@@ -46,6 +48,8 @@
 
 - (MobeelizerModelDefinition *)modelForClass:(Class)clazz;
 - (MobeelizerModelDefinition *)modelForName:(NSString *)model;
+- (MobeelizerErrors*)removeAllByDefinition:(MobeelizerModelDefinition *)model;
+- (MobeelizerErrors*)removeByDefinition:(MobeelizerModelDefinition *)model withGuid:(NSString *)guid;
 
 @end
 
@@ -68,7 +72,7 @@
         _modelsByName = [NSMutableDictionary dictionary];
         _modelsByClazz = [NSMutableDictionary dictionary];
         
-        NSArray *modelsArray = [self.mobeelizer.definitionManager modelsForRole:mobeelizer.role];
+        NSArray *modelsArray = [self.mobeelizer.definitionManager modelsForRole:mobeelizer.role andOwner:mobeelizer.user andGroup:mobeelizer.group];
         
         if(initializationRequired) {
             [self.database execQuery:@"DROP TABLE IF EXISTS _files"];
@@ -129,23 +133,23 @@
     return [self.modelsByName valueForKey:model];
 }
 
-- (void)removeAll:(Class)clazz {
-    [self.database execQuery:[[self modelForClass:clazz] queryForDeleteAll]];
+- (MobeelizerErrors*)removeAll:(Class)clazz {
+    return [self removeAllByDefinition:[self modelForClass:clazz]];
 }
 
-- (void)removeAllByModel:(NSString *)model {
-    [self.database execQuery:[[self modelForName:model] queryForDeleteAll]];
+- (MobeelizerErrors*)removeAllByModel:(NSString *)model {
+    return [self removeAllByDefinition:[self modelForName:model]];
 }
 
-- (void)remove:(Class)clazz withGuid:(NSString *)guid {
-    [self.database execQuery:[[self modelForClass:clazz] queryForDelete] withParams:[NSArray arrayWithObject:guid]];
+- (MobeelizerErrors*)remove:(Class)clazz withGuid:(NSString *)guid {
+    return [self removeByDefinition:[self modelForClass:clazz] withGuid:guid];
 }
 
-- (void)removeByModel:(NSString *)model withGuid:(NSString *)guid {
-    [self.database execQuery:[[self modelForName:model] queryForDelete] withParams:[NSArray arrayWithObject:guid]];
+- (MobeelizerErrors*)removeByModel:(NSString *)model withGuid:(NSString *)guid {
+    return [self removeByDefinition:[self modelForName:model] withGuid:guid];
 }
 
-- (void)remove:(id)object {
+- (MobeelizerErrors*)remove:(id)object {
     MobeelizerModelDefinition *model = nil;
     
     if([object isKindOfClass:[NSDictionary class]]) {
@@ -154,12 +158,34 @@
         model = [self modelForClass:[object class]];
     }
     
-    [self.database execQuery:[model queryForDelete] withParams:[NSArray arrayWithObject:[object valueForKey:@"guid"]]];
+    MobeelizerErrors *error = [self removeByDefinition:model withGuid:[object valueForKey:@"guid"]];
     
-    [model setAsDeleted:object];
+    if(error == nil) {
+        [model setAsDeleted:object];
+    }
+    
+    return error;
 }
 
-- (BOOL)exists:(Class)clazz withGuid:(NSString *)guid {    
+- (MobeelizerErrors*)removeAllByDefinition:(MobeelizerModelDefinition *)model {
+    NSArray *ownersAndGroups = [self.database execQueryForList:[NSString stringWithFormat:SQL_SELECT_OWNERS_AND_GROUPS, model.name] withParams:[NSArray array]];
+    MobeelizerErrors *error = [model checkPermissionForDeleteAllWithOwnersAndGroups:ownersAndGroups];
+    if(error == nil) {
+        [self.database execQuery:[model queryForDeleteAll]];
+    }
+    return error;
+}
+
+- (MobeelizerErrors*)removeByDefinition:(MobeelizerModelDefinition *)model withGuid:(NSString *)guid {
+    NSDictionary *ownerAndGroup = [self.database execQueryForRow:[NSString stringWithFormat:SQL_SELECT_OWNER_AND_GROUP, model.name] withParams:[NSArray arrayWithObject:guid]];
+    MobeelizerErrors *error = [model checkPermissionForDeleteWithOwnerAndGroup:ownerAndGroup];
+    if(error == nil) {
+        [self.database execQuery:[model queryForDelete] withParams:[NSArray arrayWithObject:guid]];
+    }
+    return error;
+}
+
+- (BOOL)exists:(Class)clazz withGuid:(NSString *)guid {
     MobeelizerModelDefinition *model = [self modelForClass:clazz];
     
     NSNumber *count = [self execQuery:[model queryForExists] withParams:[NSArray arrayWithObject:guid] withModel:model withSelector:@selector(execQueryForSingleResult:withParams:)];    
@@ -191,7 +217,7 @@
     return [count intValue];    
 }
 
-- (MobeelizerErrors *)save:(id)object {        
+- (MobeelizerErrors*)save:(id)object {
     MobeelizerModelDefinition *model = nil;
     
     if([object isKindOfClass:[NSDictionary class]]) {
@@ -199,34 +225,47 @@
     } else {
         model = [self modelForClass:[object class]];
     }
-        
-    MobeelizerErrors *errors = [model validate:object];
+    
+    MobeelizerErrors *error = [model validate:object];
 
     NSString *guid = [object valueForKey:@"guid"];
     
-    BOOL exists = false;
+    id originalObject = nil;
     
-    if([object isKindOfClass:[NSDictionary class]]) {
-        exists = (guid != nil) && [self existsByModel:[object valueForKey:@"model"] withGuid:guid]; 
+    
+    if(guid != nil) {
+        if([object isKindOfClass:[NSDictionary class]]) {
+            originalObject = [self getByModel:model.name withGuid:guid];
+        } else {
+            originalObject = [self get:[object class] withGuid:guid];
+        }
+    }
+
+    if(![error isValid]) {
+        return error;
+    }
+    
+    if(originalObject == nil) {
+        error = [model checkPermissionForInsert:object];
     } else {
-        exists = (guid != nil) && [self exists:[object class] withGuid:guid]; 
+        NSDictionary *originalOwnerAndGroup = [self.database execQueryForRow:[NSString stringWithFormat:SQL_SELECT_OWNER_AND_GROUP, model.name] withParams:[NSArray arrayWithObject:guid]];
+        error = [model checkPermissionForUpdate:object withOriginalObject:originalObject withOriginalOwnerAndGroup:originalOwnerAndGroup];
     }
     
-    if(![errors isValid]) {
-        return errors;
+    if(error != nil) {
+        return error;
     }
     
-    if(!exists) {
+    if(originalObject == nil) {
         NSArray *params = [model paramsForInsert:object forGuid:nil forOwner:self.mobeelizer.user withGroup:self.mobeelizer.group withModified:TRUE withDeleted:FALSE withConflicted:FALSE];
         [self.database execQuery:[model queryForInsert] withParams:params];
     } else {
         NSArray *params = [model paramsForSimpleUpdate:object];
-        [self.database execQuery:[model queryForSimpleUpdate] withParams:params]; 
+        [self.database execQuery:[model queryForSimpleUpdate] withParams:params];
     }
     
-    return errors;
+    return error;
 }
-
 
 - (id)get:(Class)clazz withGuid:(NSString *)guid {
     MobeelizerModelDefinition *model = [self modelForClass:clazz];
@@ -341,8 +380,8 @@
             }
             
             if([json valueForKey:@"fields"] == nil) {
-                NSArray *params = [model paramsForUpdateWithoutFields:object withModified:FALSE withDeleted:deleted withConflicted:conflicted];        
-                [localDatabase execQuery:[model queryForUpdateWithoutFields] withParams:params];                
+                NSArray *params = [model paramsForUpdateWithoutFields:object withModified:FALSE withDeleted:deleted withConflicted:conflicted];
+                [localDatabase execQuery:[model queryForUpdateWithoutFields] withParams:params];
             } else {
                 BOOL exists = false;
                 
@@ -353,10 +392,10 @@
                 }
                 
                 if(!exists) {
-                    NSArray *params = [model paramsForInsert:object forGuid:[json valueForKey:@"guid"] forOwner:[json valueForKey:@"owner"] withGroup:[json valueForKey:@"group"] withModified:FALSE withDeleted:deleted withConflicted:conflicted];        
-                    [localDatabase execQuery:[model queryForInsert] withParams:params];        
+                    NSArray *params = [model paramsForInsert:object forGuid:[json valueForKey:@"guid"] forOwner:[json valueForKey:@"owner"] withGroup:[json valueForKey:@"group"] withModified:FALSE withDeleted:deleted withConflicted:conflicted];
+                    [localDatabase execQuery:[model queryForInsert] withParams:params];
                 } else {
-                    NSArray *params = [model paramsForUpdate:object withModified:FALSE withDeleted:deleted withConflicted:conflicted];        
+                    NSArray *params = [model paramsForUpdate:object withModified:FALSE withDeleted:deleted withConflicted:conflicted];
                     [localDatabase execQuery:[model queryForUpdate] withParams:params];        
                 }
             }

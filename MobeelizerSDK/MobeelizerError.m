@@ -27,6 +27,8 @@
 #define MESSAGE_MOBEELIZERERRORCODELESSTHAN @"Value must be less than %@."
 #define MESSAGE_MOBEELIZERERRORCODELESSTHANOREQUALSTO @"Value must be less than or equal to %@."
 #define MESSAGE_MOBEELIZERERRORCODENOTFOUND @"Relation '%@' must exist."
+#define MESSAGE_MOBEELIZERERRORCODENOCREDENTIALSTOPERFORMOPERATIONONMODEL @"No permission to perform '%@' operation on this entity."
+#define MESSAGE_MOBEELIZERERRORCODENOCREDENTIALSTOPERFORMOPERATIONONFIELD @"No permission to perform '%@' operation on field '%@'."
 
 @interface MobeelizerError ()
 
@@ -72,6 +74,10 @@
             return MESSAGE_MOBEELIZERERRORCODELESSTHANOREQUALSTO;
         case MobeelizerErrorCodeNotFound:
             return MESSAGE_MOBEELIZERERRORCODENOTFOUND;
+        case NoCredentialsToPerformOperationOnModel:
+            return MESSAGE_MOBEELIZERERRORCODENOCREDENTIALSTOPERFORMOPERATIONONMODEL;
+        case NoCredentialsToPerformOperationOnField:
+            return MESSAGE_MOBEELIZERERRORCODENOCREDENTIALSTOPERFORMOPERATIONONFIELD;
         default:
             return @"";
     }

@@ -59,23 +59,32 @@
 /**
  * Delete all entities for the given class from the database.
  *
+ * Check the value of error to confirm that save has finished with success.
+ *
  * @param clazz The model class.
+ * @return If an error occurs, return MobeelizerErrors object that describes the problem, nil otherwise.
  */
-- (void)removeAll:(Class)clazz;
+- (MobeelizerErrors *)removeAll:(Class)clazz;
 
 /**
  * Delete the entity for the given class and guid from the database.
  *
+ * Check the value of error to confirm that save has finished with success.
+ *
  * @param clazz The model class.
  * @param guid The guid of entity.
+ * @return If an error occurs, return MobeelizerErrors object that describes the problem, nil otherwise.
  */
-- (void)remove:(Class)clazz withGuid:(NSString *)guid;
+- (MobeelizerErrors *)remove:(Class)clazz withGuid:(NSString *)guid;
 /**
  * Delete the given entity from the database.
  *
+ * Check the value of error to confirm that save has finished with success.
+ *
  * @param object The entity to remove.
+ * @return If an error occurs, return MobeelizerErrors object that describes the problem, nil otherwise.
  */
-- (void)remove:(id)object;
+- (MobeelizerErrors *)remove:(id)object;
 
 /**
  * Check whether the entity for the given class and guid exist.
@@ -106,11 +115,10 @@
 /**
  * Save the given entity in the database and return validation errors.
  *
- * Check the result of [MobeelizerErrors isValid] to confirm that save has finished with success.
+ * Check the value of error to confirm that save has finished with success.
  *
  * @param object The entity to save.
- * @return The validation errors.
- * @see MobeelizerErrors
+ * @return If an error occurs, return MobeelizerErrors object that describes the problem, nil otherwise.
  */
 - (MobeelizerErrors *)save:(id)object;
 

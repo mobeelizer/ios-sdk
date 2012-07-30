@@ -31,7 +31,7 @@
     return [self initWithName:[attributes objectForKey:@"name"] andClassName:(modelPrefix == nil ? nil : [NSString stringWithFormat:@"%@%@", modelPrefix, name])]; 
 }
 
-- (MobeelizerModelDefinition *)modelForRole:(NSString *)role {    
+- (MobeelizerModelDefinition *)modelForRole:(NSString *)role andOwner:(NSString *)owner andGroup:(NSString *)group {
     MobeelizerModelCredentials *credentialForRole = [self.credentials objectForKey:role];
     
     if(credentialForRole == nil || ![credentialForRole hasAccess]) {
@@ -52,7 +52,7 @@
         return nil;
     }
         
-    return [[MobeelizerModelDefinition alloc] initWithName:self.name andClassName:self.clazzName andFields:mutableFields andCredential:credentialForRole];
+    return [[MobeelizerModelDefinition alloc] initWithName:self.name andClassName:self.clazzName andFields:mutableFields andCredential:credentialForRole andOwner:owner andGroup:group];
 }
 
 - (void)addField:(MobeelizerFieldDefinition *)field {

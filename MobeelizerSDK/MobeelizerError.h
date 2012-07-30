@@ -28,7 +28,9 @@ typedef enum {
     MobeelizerErrorCodeGreaterThanOrEqualsTo,
     MobeelizerErrorCodeLessThan,
     MobeelizerErrorCodeLessThanOrEqualsTo,
-    MobeelizerErrorCodeNotFound
+    MobeelizerErrorCodeNotFound,
+    NoCredentialsToPerformOperationOnModel,
+    NoCredentialsToPerformOperationOnField
     
 } MobeelizerErrorCode;
 

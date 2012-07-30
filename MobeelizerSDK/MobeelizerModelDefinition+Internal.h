@@ -25,6 +25,8 @@
 
 @property (nonatomic, strong) NSString *clazzName;
 @property (nonatomic, strong) NSMutableDictionary *credentials;
+@property (nonatomic, strong) NSString *owner;
+@property (nonatomic, strong) NSString *group;
 
 @property (nonatomic) BOOL hasOwner;
 @property (nonatomic) BOOL hasGroup;
@@ -33,6 +35,6 @@
 @property (nonatomic) BOOL hasConflicted;
 
 - (id)initWithName:(NSString *)name andClassName:(NSString *)clazzName;
-- (id)initWithName:(NSString *)name andClassName:(NSString *)clazzName andFields:(NSArray *)fields andCredential:(MobeelizerModelCredentials *)credential;
+- (id)initWithName:(NSString *)name andClassName:(NSString *)clazzName andFields:(NSArray *)fields andCredential:(MobeelizerModelCredentials *)credential andOwner:(NSString *)owner andGroup:(NSString *)group;
 
 @end

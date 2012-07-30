@@ -65,7 +65,6 @@
     return errors;
 }
 
-
 - (void)addGlobalError:(MobeelizerError *)theError {
     [[self getOrCreateErrorsArrayForField:GLOBAL_FIELD] addObject:theError];
 }
@@ -82,12 +81,19 @@
     return [[self getErrorsArrayForField:field] count] == 0;
 }
 
-- (NSArray *)errors {
+- (NSArray *)globalErrors {
     return [self getErrorsArrayForField:GLOBAL_FIELD];
 }
 
 - (NSArray *)fieldErrors:(NSString *)field {
     return [self getErrorsArrayForField:field];
+}
+
+- (NSArray *)invalidFields {
+    NSMutableArray *array = [NSMutableArray array];
+    [array addObjectsFromArray:[self.errorsMap allKeys]];
+    [array removeObjectIdenticalTo:GLOBAL_FIELD];
+    return array;
 }
 
 - (NSString *)description {

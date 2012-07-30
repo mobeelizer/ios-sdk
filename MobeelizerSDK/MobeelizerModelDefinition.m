@@ -28,7 +28,7 @@
 
 @implementation MobeelizerModelDefinition
 
-@synthesize name=_name, clazz=_clazz, fields=_fields, credentials=_credentials, credential=_credential, clazzName=_clazzName, hasOwner=_hasOwner, hasGroup=_hasGroup, hasDeleted=_hasDeleted, hasModified=_hasModified, hasConflicted=_hasConflicted;
+@synthesize name=_name, clazz=_clazz, fields=_fields, credentials=_credentials, credential=_credential, clazzName=_clazzName, hasOwner=_hasOwner, hasGroup=_hasGroup, hasDeleted=_hasDeleted, hasModified=_hasModified, hasConflicted=_hasConflicted, owner=_owner, group=_group;
 
 - (id)initWithName:(NSString *)name andClassName:(NSString *)clazzName {
     if(self = [super init]) {
@@ -42,14 +42,16 @@
     return self;
 }
 
-- (id)initWithName:(NSString *)name andClassName:(NSString *)clazzName andFields:(NSArray *)fields andCredential:(MobeelizerModelCredentials *)credential {
+- (id)initWithName:(NSString *)name andClassName:(NSString *)clazzName andFields:(NSArray *)fields andCredential:(MobeelizerModelCredentials *)credential andOwner:(NSString *)owner andGroup:(NSString *)group {
     if(self = [super init]) {
         _name = name;
         _clazzName = clazzName;        
         _fields = fields;
         _credentials = nil;       
         _credential = credential;
-        
+        _owner = owner;
+        _group = group;
+
         if(self.clazzName == nil) {
             _clazz = nil;
             _hasOwner = true;

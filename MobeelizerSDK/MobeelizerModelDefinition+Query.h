@@ -41,5 +41,9 @@
 - (id) convertJsonToObject:(NSDictionary *)json;
 - (NSString *) convertMapToJson:(NSDictionary *)row;
 - (void) setAsDeleted:(id)object;
+- (MobeelizerErrors*) checkPermissionForDeleteAllWithOwnersAndGroups:(NSArray*)ownersAndGroups;
+- (MobeelizerErrors*) checkPermissionForDeleteWithOwnerAndGroup:(NSDictionary*)ownerAndGroup;
+- (MobeelizerErrors*) checkPermissionForInsert:(id)object;
+- (MobeelizerErrors*) checkPermissionForUpdate:(id)object withOriginalObject:(id)originalObject withOriginalOwnerAndGroup:(NSDictionary*)ownerAndGroup;
 
 @end

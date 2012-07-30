@@ -96,11 +96,11 @@
     return self;
 }
 
-- (NSArray *)modelsForRole:(NSString *)role {
+- (NSArray *)modelsForRole:(NSString *)role andOwner:(NSString *)owner andGroup:(NSString *)group {
     NSMutableArray *array = [NSMutableArray array];
     
     for(int i = 0; i < [self.models count]; i++) {        
-        MobeelizerModelDefinition *modelForRole = [[self.models objectAtIndex:i] modelForRole:role];
+        MobeelizerModelDefinition *modelForRole = [[self.models objectAtIndex:i] modelForRole:role andOwner:owner andGroup:group];
         
         if(modelForRole != nil) {
             [array addObject:modelForRole];

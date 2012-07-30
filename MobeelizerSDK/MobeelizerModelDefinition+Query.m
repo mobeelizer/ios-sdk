@@ -21,7 +21,11 @@
 #import "Mobeelizer+Internal.h"
 #import "MobeelizerModelDefinition+Query.h"
 #import "MobeelizerFieldDefinition+TypeAndQuery.h"
+#import "MobeelizerFieldDefinition.h"
+#import "MobeelizerFieldDefinition+Internal.h"
 #import "MobeelizerGuidUtil.h"
+#import "MobeelizerErrors+Internal.h"
+#import "MobeelizerError+Internal.h"
 
 #define SQL_CREATE @"CREATE TABLE %@ (_guid TEXT(36) PRIMARY KEY, _owner TEXT(255) NOT NULL, _group TEXT(255) NOT NULL, _deleted INTEGER(1) NOT NULL DEFAULT 0, _modified INTEGER(1) NOT NULL DEFAULT 0, _conflicted INTEGER(1) NOT NULL DEFAULT 0%@)"
 #define SQL_DELETE_ALL @"UPDATE %@ SET _deleted = 1, _modified = 1 WHERE _deleted = 0"
@@ -318,7 +322,9 @@
     }
     
     for(MobeelizerFieldDefinition *field in self.fields) {
-        [field addValueFromRow:row toObject:object];
+        if([self checkCredential:field.credential.readAllowed forOwner:[row valueForKey:@"_owner"] andGroup:[row valueForKey:@"_group"]]) {
+            [field addValueFromRow:row toObject:object];
+        }
     }
     
     return object;
@@ -328,6 +334,84 @@
     if(self.hasDeleted) {
         [object setValue:[NSNumber numberWithBool:TRUE] forKey:@"deleted"];
     }    
+}
+
+- (BOOL) checkCredential:(MobeelizerCredential)credential forOwner:(NSString *)owner andGroup:(NSString *)group {
+    return credential == MobeelizerCredentialAll || (credential == MobeelizerCredentialGroup && [group isEqualToString:self.group]) || (credential == MobeelizerCredentialOwn && [owner isEqualToString:self.owner]);
+}
+
+- (MobeelizerErrors*) checkPermissionForDeleteAllWithOwnersAndGroups:(NSArray*)ownersAndGroups {
+    if(self.credential.deleteAllowed == MobeelizerCredentialAll) {
+        return nil;
+    }
+
+    if(self.credential.deleteAllowed == MobeelizerCredentialNone) {
+        MobeelizerErrors *error = [[MobeelizerErrors alloc] init];
+        [error addGlobalError:[[MobeelizerError alloc] initWithCode:NoCredentialsToPerformOperationOnModel andArguments:[NSArray arrayWithObject:@"delete"]]];
+        return error;
+    }
+    
+    for (NSDictionary *ownerAndGroup in ownersAndGroups) {
+        if(![self checkCredential:self.credential.deleteAllowed forOwner:[ownerAndGroup objectForKey:@"_owner"] andGroup:[ownerAndGroup objectForKey:@"_group"]]) {
+            MobeelizerErrors *error = [[MobeelizerErrors alloc] init];
+            [error addGlobalError:[[MobeelizerError alloc] initWithCode:NoCredentialsToPerformOperationOnModel andArguments:[NSArray arrayWithObject:@"delete"]]];
+            return error;
+        }
+    }
+    
+    return nil;
+}
+
+- (MobeelizerErrors*) checkPermissionForDeleteWithOwnerAndGroup:(NSDictionary*)ownerAndGroup {
+    if(![self checkCredential:self.credential.deleteAllowed forOwner:[ownerAndGroup objectForKey:@"_owner"] andGroup:[ownerAndGroup objectForKey:@"_group"]]) {
+        MobeelizerErrors *error = [[MobeelizerErrors alloc] init];
+        [error addGlobalError:[[MobeelizerError alloc] initWithCode:NoCredentialsToPerformOperationOnModel andArguments:[NSArray arrayWithObject:@"delete"]]];
+        return error;
+    }
+    return nil;
+}
+
+- (MobeelizerErrors*) checkPermissionForInsert:(id)object {
+    if(![self checkCredential:self.credential.createAllowed forOwner:self.owner andGroup:self.group]) {
+        MobeelizerErrors *error = [[MobeelizerErrors alloc] init];
+        [error addGlobalError:[[MobeelizerError alloc] initWithCode:NoCredentialsToPerformOperationOnModel andArguments:[NSArray arrayWithObject:@"create"]]];
+        return error;
+    }
+    for(MobeelizerFieldDefinition *field in self.fields) {
+        id value = [object valueForKey:field.name];
+        
+        if(field.credential.createAllowed != MobeelizerCredentialNone || value == nil || (field.defaultValue != nil && [[value stringValue] isEqualToString:[field.defaultValue stringValue]])) {
+            continue;
+        }
+           
+        MobeelizerErrors *error = [[MobeelizerErrors alloc] init];
+        [error addGlobalError:[[MobeelizerError alloc] initWithCode:NoCredentialsToPerformOperationOnField andArguments:[NSArray arrayWithObjects:@"create", field.name, nil]]];
+        return error;
+    }
+    
+    return nil;
+}
+
+- (MobeelizerErrors*) checkPermissionForUpdate:(id)object withOriginalObject:(id)originalObject withOriginalOwnerAndGroup:(NSDictionary*)originalOwnerAndGroup {
+    if(![self checkCredential:self.credential.updateAllowed forOwner:[originalOwnerAndGroup objectForKey:@"_owner"] andGroup:[originalOwnerAndGroup objectForKey:@"_group"]]) {
+        MobeelizerErrors *error = [[MobeelizerErrors alloc] init];
+        [error addGlobalError:[[MobeelizerError alloc] initWithCode:NoCredentialsToPerformOperationOnModel andArguments:[NSArray arrayWithObject:@"update"]]];
+        return error;
+    }
+    for(MobeelizerFieldDefinition *field in self.fields) {
+        id value = [object valueForKey:field.name];
+        id originalValue = [originalObject valueForKey:field.name];
+                
+        if([self checkCredential:field.credential.updateAllowed forOwner:[originalOwnerAndGroup objectForKey:@"_owner"] andGroup:[originalOwnerAndGroup objectForKey:@"_group"]] || value == originalValue || [[value stringValue] isEqualToString:[originalValue stringValue]]) {
+            continue;
+        }
+        
+        MobeelizerErrors *error = [[MobeelizerErrors alloc] init];
+        [error addGlobalError:[[MobeelizerError alloc] initWithCode:NoCredentialsToPerformOperationOnField andArguments:[NSArray arrayWithObjects:@"update", field.name, nil]]];
+        return error;
+    }
+    
+    return nil;
 }
 
 @end

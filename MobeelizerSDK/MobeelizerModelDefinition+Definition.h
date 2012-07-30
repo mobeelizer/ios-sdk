@@ -27,6 +27,6 @@
 - (id)initWithAttributes:(NSDictionary *)attributes andModelPrefix:(NSString *)modelPrefix;
 - (void)addField:(MobeelizerFieldDefinition *)field;
 - (void)addCredentials:(MobeelizerModelCredentials *)credentials forRole:(NSString *)role;
-- (MobeelizerModelDefinition *)modelForRole:(NSString *)role;
+- (MobeelizerModelDefinition *)modelForRole:(NSString *)role andOwner:(NSString *)owner andGroup:(NSString *)group;
 
 @end

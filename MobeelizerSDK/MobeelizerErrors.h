@@ -46,7 +46,7 @@
  *
  * @return The list of errors.
  */
-- (NSArray *)errors;
+- (NSArray *)globalErrors;
 
 /**
  * The list of field's errors.
@@ -55,5 +55,12 @@
  * @return The list of errors.
  */
 - (NSArray *)fieldErrors:(NSString *)field;
+
+/**
+ * The list of invalid fields.
+ *
+ * @return The list of invalid fields.
+ */
+- (NSArray *)invalidFields;
 
 @end

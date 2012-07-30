@@ -47,16 +47,18 @@
  * Delete all entities for the given model from the database.
  *
  * @param model The model.
+ * @return If an error occurs, return MobeelizerErrors object that describes the problem, nil otherwise.
  */
-- (void)removeAllByModel:(NSString *)model;
+- (MobeelizerErrors *)removeAllByModel:(NSString *)model;
 
 /**
  * Delete the entity for the given model and guid from the database.
  *
  * @param model The model.
  * @param guid The guid of entity.
+ * @return If an error occurs, return MobeelizerErrors object that describes the problem, nil otherwise.
  */
-- (void)removeByModel:(NSString *)model withGuid:(NSString *)guid;
+- (MobeelizerErrors *)removeByModel:(NSString *)model withGuid:(NSString *)guid;
 
 /**
  * Check whether the entity for the given model and guid exist.

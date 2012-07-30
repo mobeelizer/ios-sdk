@@ -34,6 +34,6 @@
 @property (nonatomic, strong) NSMutableArray *models;
 
 - (id)initWithAsset:(NSString *)definitionAsset andModelPrefix:(NSString *)modelPrefix;
-- (NSArray *)modelsForRole:(NSString *)role;
+- (NSArray *)modelsForRole:(NSString *)role andOwner:(NSString *)owner andGroup:(NSString *)group;
 
 @end
