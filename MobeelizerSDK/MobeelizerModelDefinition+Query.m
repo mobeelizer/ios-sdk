@@ -292,6 +292,11 @@
     return [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
 }
 
+
+- (BOOL) checkCredential:(MobeelizerCredential)credential forOwner:(NSString *)owner andGroup:(NSString *)group {
+    return credential == MobeelizerCredentialAll || (credential == MobeelizerCredentialGroup && [group isEqualToString:self.group]) || (credential == MobeelizerCredentialOwn && [owner isEqualToString:self.owner]);
+}
+
 - (id) convertMapToObject:(NSDictionary *)row {
     id object = self.clazz == nil ? [NSMutableDictionary dictionary] : [[self.clazz alloc] init];
     
@@ -334,10 +339,6 @@
     if(self.hasDeleted) {
         [object setValue:[NSNumber numberWithBool:TRUE] forKey:@"deleted"];
     }    
-}
-
-- (BOOL) checkCredential:(MobeelizerCredential)credential forOwner:(NSString *)owner andGroup:(NSString *)group {
-    return credential == MobeelizerCredentialAll || (credential == MobeelizerCredentialGroup && [group isEqualToString:self.group]) || (credential == MobeelizerCredentialOwn && [owner isEqualToString:self.owner]);
 }
 
 - (MobeelizerErrors*) checkPermissionForDeleteAllWithOwnersAndGroups:(NSArray*)ownersAndGroups {
