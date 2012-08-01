@@ -183,6 +183,7 @@
 		C88EBA23150A0D0800E26149 /* MobeelizerOperatorRestriction.m in Sources */ = {isa = PBXBuildFile; fileRef = C88EBA21150A0D0600E26149 /* MobeelizerOperatorRestriction.m */; };
 		C8956D811507A5A9004DC15C /* MobeelizerPropertyUtil.h in Headers */ = {isa = PBXBuildFile; fileRef = C8956D7F1507A5A7004DC15C /* MobeelizerPropertyUtil.h */; };
 		C8956D821507A5A9004DC15C /* MobeelizerPropertyUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = C8956D801507A5A8004DC15C /* MobeelizerPropertyUtil.m */; };
+		C8F28FE015C910A500D14D75 /* CHANGELOG.md in Resources */ = {isa = PBXBuildFile; fileRef = C8F28FDF15C910A500D14D75 /* CHANGELOG.md */; };
 		C8F8B64E15667BDF00D38924 /* Mobeelizer+Dictionary.h in Headers */ = {isa = PBXBuildFile; fileRef = C8F8B64B1566794B00D38924 /* Mobeelizer+Dictionary.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C8F8B64F15667BF000D38924 /* MobeelizerDatabase+Dictionary.h in Headers */ = {isa = PBXBuildFile; fileRef = C8F8B64D156679CA00D38924 /* MobeelizerDatabase+Dictionary.h */; settings = {ATTRIBUTES = (Public, ); }; };
 /* End PBXBuildFile section */
@@ -368,6 +369,7 @@
 		C88EBA21150A0D0600E26149 /* MobeelizerOperatorRestriction.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MobeelizerOperatorRestriction.m; sourceTree = "<group>"; };
 		C8956D7F1507A5A7004DC15C /* MobeelizerPropertyUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MobeelizerPropertyUtil.h; sourceTree = "<group>"; };
 		C8956D801507A5A8004DC15C /* MobeelizerPropertyUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MobeelizerPropertyUtil.m; sourceTree = "<group>"; };
+		C8F28FDF15C910A500D14D75 /* CHANGELOG.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = CHANGELOG.md; sourceTree = "<group>"; };
 		C8F8B64B1566794B00D38924 /* Mobeelizer+Dictionary.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Mobeelizer+Dictionary.h"; sourceTree = "<group>"; };
 		C8F8B64D156679CA00D38924 /* MobeelizerDatabase+Dictionary.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "MobeelizerDatabase+Dictionary.h"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -532,6 +534,7 @@
 		C83D24C714FB82E500F015BB = {
 			isa = PBXGroup;
 			children = (
+				C8F28FDF15C910A500D14D75 /* CHANGELOG.md */,
 				C8322460152C6D0D0077DD22 /* README.md */,
 				C83D24D714FB82E600F015BB /* MobeelizerSDK */,
 				C83D24D414FB82E600F015BB /* Frameworks */,
@@ -867,6 +870,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				C82A4C40150101F900D7B591 /* InfoPlist.strings in Resources */,
+				C8F28FE015C910A500D14D75 /* CHANGELOG.md in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
