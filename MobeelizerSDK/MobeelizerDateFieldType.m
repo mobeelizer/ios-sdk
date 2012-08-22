@@ -65,6 +65,8 @@
     
     if(value != nil) {
         [json setValue:[NSString stringWithFormat:@"%d", [value intValue]] forKey:self.name];
+    } else {
+        [json setValue:[NSNull null] forKey:self.name];
     }
 }
 

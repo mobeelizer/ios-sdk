@@ -59,6 +59,8 @@
     
     if(value != nil) {
         [json setValue:[NSString stringWithFormat:[NSString stringWithFormat:@"%%.%@f", self.scale], [value doubleValue]] forKey:self.name];
+    } else {
+        [json setValue:[NSNull null] forKey:self.name];
     }
 }
 

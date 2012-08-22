@@ -54,6 +54,8 @@
     
     if(value != nil) {
         [json setValue:(([value intValue] == 1) ? @"true" : @"false") forKey:self.name];
+    } else {
+        [json setValue:[NSNull null] forKey:self.name];
     }
 }
 

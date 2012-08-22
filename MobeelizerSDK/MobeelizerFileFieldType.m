@@ -72,13 +72,14 @@
 - (void)addValueFromRow:(NSDictionary *)row toJson:(NSDictionary *)json {
     NSString *guid = [row valueForKey:[NSString stringWithFormat:@"%@_guid", self.name]];
     
-    if(guid == nil) {
-        return;
+    id value = [NSNull null];
+    
+    if(guid != nil) {
+        NSString *name = [row valueForKey:[NSString stringWithFormat:@"%@_name", self.name]];    
+        value = [NSDictionary dictionaryWithObjects:[NSArray arrayWithObjects:guid, name, nil] forKeys:[NSArray arrayWithObjects:@"guid", @"filename", nil]];
     }
     
-    NSString *name = [row valueForKey:[NSString stringWithFormat:@"%@_name", self.name]];
-    
-    [json setValue:[NSDictionary dictionaryWithObjects:[NSArray arrayWithObjects:guid, name, nil] forKeys:[NSArray arrayWithObjects:@"guid", @"filename", nil]] forKey:self.name];
+    [json setValue:value forKey:self.name];
 }
 
 - (NSArray *)getColumns {
