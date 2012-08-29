@@ -318,10 +318,13 @@ static Mobeelizer *mobeelizer = nil;
     if(![self isLoggedIn]) {
         MobeelizerException(@"Sync failed.", @"User must be logged in.")
     }
-    
-    MobeelizerLog(@"Sync: %@", all ? @"all" : @"diff");
-    
-    return [self.syncManager sync:all];
+    if ([self.mode isEqualToString:MODE_DEVELOPMENT]) {
+        MobeelizerLog(@"Sync: %@ - (ignored in development mode)", all ? @"all" : @"diff");
+        return MobeelizerSyncStatusFinishedWithSuccess;
+    } else {
+        MobeelizerLog(@"Sync: %@", all ? @"all" : @"diff");
+        return [self.syncManager sync:all];
+    }
 }
 
 - (void)registerSyncStatusListener:(id<MobeelizerSyncListener>)listener {
