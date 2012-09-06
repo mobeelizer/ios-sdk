@@ -86,7 +86,7 @@
     if(defaultValue == nil) {
         return nil;
     } else {
-        return [NSString stringWithFormat:@"%d", [(NSDate *)defaultValue timeIntervalSince1970]];
+        return [NSString stringWithFormat:@"%f", [(NSDate *)defaultValue timeIntervalSince1970]];
     }
 }
 

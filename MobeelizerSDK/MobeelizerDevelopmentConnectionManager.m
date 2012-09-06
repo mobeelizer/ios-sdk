@@ -19,6 +19,7 @@
 // 
 
 #import "Mobeelizer.h"
+#import "MobeelizerOperationError.h"
 #import "MobeelizerDevelopmentConnectionManager.h"
 
 @interface MobeelizerDevelopmentConnectionManager ()
@@ -38,14 +39,13 @@
     return self;
 }
 
-- (MobeelizerLoginStatus)loginToInstance:(NSString *)instance withUser:(NSString *)user andPassword:(NSString *)password {
+- (void)loginToInstance:(NSString *)instance withUser:(NSString *)user andPassword:(NSString *)password returningError:(MobeelizerOperationError **)error {
     self.instance = instance;
     self.user = user;
     self.group = [[self.developmentRole componentsSeparatedByString:@"-"] objectAtIndex:0];
     self.role = self.developmentRole;
     self.instanceGuid = @"00000000-0000-0000-0000-000000000000";
     self.initialSyncRequired = FALSE;
-    return MobeelizerLoginStatusOk;
 }
 
 @end

@@ -19,13 +19,14 @@
 // 
 
 #import "MobeelizerConnectionManager.h"
+#import "MobeelizerOperationError+Internal.h"
 
 @implementation MobeelizerConnectionManager
 
 @synthesize instance=_instance, initialSyncRequired=_initialSyncRequired, role=_role, instanceGuid=_instanceGuid, user=_user, group=_group;
 
-- (MobeelizerLoginStatus)loginToInstance:(NSString *)instance withUser:(NSString *)user andPassword:(NSString *)password {
-    return MobeelizerLoginStatusOtherFailure;
+- (void)loginToInstance:(NSString *)instance withUser:(NSString *)user andPassword:(NSString *)password returningError:(MobeelizerOperationError **)error {
+    // empty
 }
 
 - (void)logout {
@@ -41,36 +42,36 @@
     return self.role != nil;
 }
 
-- (NSString *)requestSyncAll {
+- (NSString *)requestSyncAllReturningError:(MobeelizerOperationError **)error {
     return nil;
 }
 
-- (NSString *)requestSyncDiff:(NSString *)dataPath {
+- (NSString *)requestSyncDiff:(NSString *)dataPath returningError:(MobeelizerOperationError **)error {
     return nil;
 }
 
-- (BOOL)waitUntilSyncRequestComplete:(NSString *)ticket {
-    return FALSE;
-}
-
-- (NSString *)getSyncData:(NSString *)ticket {
-    return nil;
-}
-
-- (void)confirmTask:(NSString *)ticket {
+- (void)waitUntilSyncRequestComplete:(NSString *)ticket returningError:(MobeelizerOperationError **)error {
     // empty
 }
 
-- (MobeelizerCommunicationStatus)sendRemoteNotification:(NSDictionary *)notification toUsers:(NSArray *)users toGroup:(NSString *)group onDevice:(NSString *)device {
-    return MobeelizerCommunicationStatusSuccess;
+- (NSString *)getSyncData:(NSString *)ticket returningError:(MobeelizerOperationError **)error {
+    return nil;
 }
 
-- (MobeelizerCommunicationStatus)registerDeviceToken:(NSString *)token {
-    return MobeelizerCommunicationStatusSuccess;
+- (void)confirmTask:(NSString *)ticket returningError:(MobeelizerOperationError **)error {
+    // empty
 }
 
-- (MobeelizerCommunicationStatus)unregisterForRemoteNotifications {
-    return MobeelizerCommunicationStatusSuccess;
+- (void)sendRemoteNotification:(NSDictionary *)notification toUsers:(NSArray *)users toGroup:(NSString *)group onDevice:(NSString *)device returningError:(MobeelizerOperationError **)error {
+    // empty
+}
+
+- (void)registerDeviceToken:(NSString *)token returningError:(MobeelizerOperationError **)error {
+    // empty
+}
+
+- (void)unregisterForRemoteNotificationsReturningError:(MobeelizerOperationError **)error {
+    // empty
 }
 
 @end

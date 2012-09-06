@@ -32,5 +32,6 @@
 #import <MobeelizerSDK/MobeelizerModelDefinition.h>
 #import <MobeelizerSDK/MobeelizerCriteriaBuilder.h>
 #import <MobeelizerSDK/MobeelizerErrors.h>
+#import <MobeelizerSDK/MobeelizerOperationError.h>
 #import <MobeelizerSDK/MobeelizerFieldCredentials.h>
 #import <MobeelizerSDK/MobeelizerFieldDefinition.h>

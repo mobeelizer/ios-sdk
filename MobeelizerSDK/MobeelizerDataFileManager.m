@@ -25,6 +25,7 @@
 #import "ZipWriteStream.h"
 #import "Mobeelizer+Internal.h"
 #import "MobeelizerDatabase+Internal.h"
+#import "MobeelizerOperationError+Internal.h"
 
 @interface MobeelizerDataFileManager ()
 
@@ -46,7 +47,7 @@
     return self;
 }
 
-- (BOOL)prepareOutputFile:(NSString *)dataFilePath {
+- (void)prepareOutputFile:(NSString *)dataFilePath returningError:(MobeelizerOperationError**)error {
     ZipFile *zip = nil;
     
     @try {        
@@ -72,16 +73,14 @@
             
             [self writeFile:file withContent:fileData toZip:zip];
         }
-        
-        return TRUE;
+    } @catch (NSException * e) {
+        *error = [[MobeelizerOperationError alloc] initWithException:e];
     } @finally {
         [zip close];
     }
-    
-    return FALSE;
 }
 
-- (BOOL)processInputFile:(NSString *)dataFilePath andSyncAll:(BOOL)all {
+- (void)processInputFile:(NSString *)dataFilePath andSyncAll:(BOOL)all returningError:(MobeelizerOperationError**)error {
     ZipFile *zip = nil;
     
     @try {        
@@ -100,22 +99,20 @@
         
         NSData *data = [self readFile:@"data" fromZip:zip];
         
-        BOOL success = [self.mobeelizer.database updateEntitiesFromSync:data withAll:all];
+        [self.mobeelizer.database updateEntitiesFromSync:data withAll:all returningError:error];
         
-        if (!success) {
-            return FALSE;
+        if (*error != nil) {
+            return;
         }
         
         NSData *deletedFiles = [self readFile:@"deletedFiles" fromZip:zip];
     
         [self.mobeelizer.fileManager deleteFilesFromSync:deletedFiles];
-        
-        return TRUE;
+    } @catch (NSException * e) {
+        *error = [[MobeelizerOperationError alloc] initWithException:e];
     } @finally {
         [zip close];
     }
-    
-    return FALSE;
 }
          
 - (void)writeFile:(NSString *)file withContent:(NSData *)data toZip:(ZipFile *)zip {

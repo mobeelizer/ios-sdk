@@ -29,9 +29,10 @@
 #import "MobeelizerDefinitionManager.h"
 #import "MobeelizerDeviceIdentifierUtil.h"
 #import "MobeelizerSyncManager.h"
+#import "MobeelizerOperationError.h"
 
-#define DEFAULT_TEST_URL @"https://cloud.mobeelizer.com/sync"
-#define DEFAULT_PRODUCTION_URL @"https://cloud.mobeelizer.com/sync"
+#define DEFAULT_TEST_URL @"https://cloud.mobeelizer.com/sync/v2"
+#define DEFAULT_PRODUCTION_URL @"https://cloud.mobeelizer.com/sync/v2"
 
 #define META_DEVICE @"device"
 #define META_URL @"url"
@@ -49,23 +50,23 @@
 @property (nonatomic, strong) MobeelizerSyncManager *syncManager;
 
 - (id)initWithConfiguration:(NSDictionary *)configuration;
-- (void)loginToInstance:(NSString *)instance withUser:(NSString *)user andPassword:(NSString *)password withCallback:(id<MobeelizerLoginCallback>)callback;
-- (MobeelizerLoginStatus)loginToInstance:(NSString *)instance withUser:(NSString *)user andPassword:(NSString *)password;
-- (void)loginUser:(NSString *)user andPassword:(NSString *)password withCallback:(id<MobeelizerLoginCallback>)callback;
-- (MobeelizerLoginStatus)loginUser:(NSString *)user andPassword:(NSString *)password;
+- (void)loginToInstance:(NSString *)instance withUser:(NSString *)user andPassword:(NSString *)password withCallback:(id<MobeelizerOperationCallback>)callback;
+- (MobeelizerOperationError*)loginToInstance:(NSString *)instance withUser:(NSString *)user andPassword:(NSString *)password;
+- (void)loginUser:(NSString *)user andPassword:(NSString *)password withCallback:(id<MobeelizerOperationCallback>)callback;
+- (MobeelizerOperationError*)loginUser:(NSString *)user andPassword:(NSString *)password;
 - (void)logout;
 - (void)destroy;
 - (BOOL)isLoggedIn;
-- (MobeelizerSyncStatus)sync:(BOOL)all;
-- (void)sync:(BOOL)all withCallback:(id<MobeelizerSyncCallback>)callback;
+- (MobeelizerOperationError*)sync:(BOOL)all;
+- (void)sync:(BOOL)all withCallback:(id<MobeelizerOperationCallback>)callback;
 - (MobeelizerSyncStatus)checkSyncStatus;
 - (MobeelizerFile *)createFile:(NSString *)name withData:(NSData *)data;
 - (MobeelizerFile *)createFile:(NSString *)name withGuid:(NSString *)guid;
 - (void)registerSyncStatusListener:(id<MobeelizerSyncListener>)listener;
 - (BOOL)isMultitaskingSupported;
-- (MobeelizerCommunicationStatus)sendRemoteNotification:(NSDictionary *)notification toUsers:(NSArray *)users toGroup:(NSString *)group onDevice:(NSString *)device;
-- (MobeelizerCommunicationStatus)registerDeviceToken:(NSString *)token;
-- (MobeelizerCommunicationStatus)unregisterForRemoteNotifications;
+- (MobeelizerOperationError*)sendRemoteNotification:(NSDictionary *)notification toUsers:(NSArray *)users toGroup:(NSString *)group onDevice:(NSString *)device;
+- (MobeelizerOperationError*)registerDeviceToken:(NSString *)token;
+- (MobeelizerOperationError*)unregisterForRemoteNotifications;
 
 @end
 
@@ -210,54 +211,70 @@ static Mobeelizer *mobeelizer = nil;
     return self.connectionManager.instance;    
 }
 
-- (void)loginUser:(NSString *)user andPassword:(NSString *)password withCallback:(id<MobeelizerLoginCallback>)callback {
+- (void)loginUser:(NSString *)user andPassword:(NSString *)password withCallback:(id<MobeelizerOperationCallback>)callback {
     [self loginToInstance:([self.mode isEqualToString:MODE_PRODUCTION] ? MODE_PRODUCTION : MODE_TEST) withUser:user andPassword:password withCallback:callback];
 }
 
-- (void)loginToInstance:(NSString *)instance withUser:(NSString *)user andPassword:(NSString *)password withCallback:(id<MobeelizerLoginCallback>)callback {
+- (void)loginToInstance:(NSString *)instance withUser:(NSString *)user andPassword:(NSString *)password withCallback:(id<MobeelizerOperationCallback>)callback {
     if(!self.multitaskingSupported) {
-        [callback onLoginFinished:[self loginToInstance:instance withUser:user andPassword:password]];
+        MobeelizerOperationError *error = [self loginToInstance:instance withUser:user andPassword:password];
+        if(error == nil) {
+            [callback onSuccess];
+        } else {
+            [callback onFailure:error];
+        }
     } else {
         dispatch_async(dispatch_get_global_queue(0, 0), ^{
-            MobeelizerLoginStatus status = [self loginToInstance:instance withUser:user andPassword:password];
+            MobeelizerOperationError *error = [self loginToInstance:instance withUser:user andPassword:password];
             
-            dispatch_async(dispatch_get_main_queue(), ^{            
-                [callback onLoginFinished:status];
+            dispatch_async(dispatch_get_main_queue(), ^{
+                if(error == nil) {
+                    [callback onSuccess];
+                } else {
+                    [callback onFailure:error];
+                }
             });
         });
         
     }
 }
 
-- (MobeelizerCommunicationStatus)registerDeviceToken:(NSString *)token {
-    return [self.connectionManager registerDeviceToken:token];
+- (MobeelizerOperationError*)registerDeviceToken:(NSString *)token {
+    MobeelizerOperationError *error = nil;
+    [self.connectionManager registerDeviceToken:token returningError:&error];
+    return error;
 }
 
-- (MobeelizerCommunicationStatus)unregisterForRemoteNotifications {
-    return [self.connectionManager unregisterForRemoteNotifications];
+- (MobeelizerOperationError*)unregisterForRemoteNotifications {
+    MobeelizerOperationError *error = nil;
+    [self.connectionManager unregisterForRemoteNotificationsReturningError:&error];
+    return error;
 }
 
-- (MobeelizerCommunicationStatus)sendRemoteNotification:(NSDictionary *)notification toUsers:(NSArray *)users toGroup:(NSString *)group onDevice:(NSString *)device {
-    return [self.connectionManager sendRemoteNotification:notification toUsers:users toGroup:group onDevice:device];
+- (MobeelizerOperationError*)sendRemoteNotification:(NSDictionary *)notification toUsers:(NSArray *)users toGroup:(NSString *)group onDevice:(NSString *)device {
+    MobeelizerOperationError *error = nil;
+    [self.connectionManager sendRemoteNotification:notification toUsers:users toGroup:group onDevice:device returningError:&error];
+    return error;
 }
 
-- (MobeelizerLoginStatus)loginUser:(NSString *)user andPassword:(NSString *)password {
+- (MobeelizerOperationError*)loginUser:(NSString *)user andPassword:(NSString *)password {
     return [self loginToInstance:([self.mode isEqualToString:MODE_PRODUCTION] ? MODE_PRODUCTION : MODE_TEST) withUser:user andPassword:password];
 }
 
-- (MobeelizerLoginStatus)loginToInstance:(NSString *)instance withUser:(NSString *)user andPassword:(NSString *)password {
+- (MobeelizerOperationError*)loginToInstance:(NSString *)instance withUser:(NSString *)user andPassword:(NSString *)password {
     if([self isLoggedIn]) {
         [self logout];
     }
     
     MobeelizerLog(@"Login: %@, %@, %@, %@", self.vendor, self.application, instance, user);
     
-    MobeelizerLoginStatus status = [self.connectionManager loginToInstance:instance withUser:user andPassword:password];
+    MobeelizerOperationError *error = nil;
     
-    MobeelizerLog(@"Login result: %d", status);
+    [self.connectionManager loginToInstance:instance withUser:user andPassword:password returningError:&error];
     
-    if (status != MobeelizerLoginStatusOk) {
-        return status;
+    if(error != nil) {
+        MobeelizerLog(@"Login failure: %@", error);
+        return error;
     }
     
     MobeelizerLog(@"Role: %@", self.role);
@@ -266,13 +283,14 @@ static Mobeelizer *mobeelizer = nil;
     _database = [[MobeelizerDatabase alloc] initWithMobeelizer:self];
     
     if (self.connectionManager.initialSyncRequired) {
-        if([self.syncManager sync:TRUE] != MobeelizerSyncStatusFinishedWithSuccess) {
+        error = [self.syncManager sync:TRUE];
+        if(error != nil) {
             MobeelizerLog(@"Cannot perform initial sync");
-            return MobeelizerLoginStatusOtherFailure;
+            return error;
         }
     }
     
-    return MobeelizerLoginStatusOk;
+    return nil;
 }
 
 - (void)logout {
@@ -300,27 +318,36 @@ static Mobeelizer *mobeelizer = nil;
     return [self.connectionManager isLoggedIn];    
 }
 
-- (void)sync:(BOOL)all withCallback:(id<MobeelizerSyncCallback>)callback {
+- (void)sync:(BOOL)all withCallback:(id<MobeelizerOperationCallback>)callback {
     if(!self.multitaskingSupported) {
-        [callback onSyncFinished:[self sync:all]];
+        MobeelizerOperationError *error = [self sync:all];
+        if(error == nil) {
+            [callback onSuccess];
+        } else {
+            [callback onFailure:error];
+        }
     } else {
         dispatch_async(dispatch_get_global_queue(0, 0), ^{
-            MobeelizerLoginStatus status = [self sync:all];
+            MobeelizerOperationError *error = [self sync:all];
             
             dispatch_async(dispatch_get_main_queue(), ^{            
-                [callback onSyncFinished:status];
+                if(error == nil) {
+                    [callback onSuccess];
+                } else {
+                    [callback onFailure:error];
+                }
             });
         });
     }
 }
 
-- (MobeelizerSyncStatus)sync:(BOOL)all {
+- (MobeelizerOperationError*)sync:(BOOL)all {
     if(![self isLoggedIn]) {
         MobeelizerException(@"Sync failed.", @"User must be logged in.")
     }
     if ([self.mode isEqualToString:MODE_DEVELOPMENT]) {
         MobeelizerLog(@"Sync: %@ - (ignored in development mode)", all ? @"all" : @"diff");
-        return MobeelizerSyncStatusFinishedWithSuccess;
+        return nil;
     } else {
         MobeelizerLog(@"Sync: %@", all ? @"all" : @"diff");
         return [self.syncManager sync:all];
@@ -354,19 +381,19 @@ static Mobeelizer *mobeelizer = nil;
     mobeelizer = [[Mobeelizer alloc] initWithConfiguration:configuration];
 }
 
-+ (void)loginToInstance:(NSString *)instance withUser:(NSString *)user andPassword:(NSString *)password withCallback:(id<MobeelizerLoginCallback>)callback {
++ (void)loginToInstance:(NSString *)instance withUser:(NSString *)user andPassword:(NSString *)password withCallback:(id<MobeelizerOperationCallback>)callback {
     [mobeelizer loginToInstance:instance withUser:user andPassword:password withCallback:callback];
 }
 
-+ (MobeelizerLoginStatus)loginToInstance:(NSString *)instance withUser:(NSString *)user andPassword:(NSString *)password {
++ (MobeelizerOperationError*)loginToInstance:(NSString *)instance withUser:(NSString *)user andPassword:(NSString *)password {
     return [mobeelizer loginToInstance:instance withUser:user andPassword:password];    
 }
 
-+ (void)loginUser:(NSString *)user andPassword:(NSString *)password withCallback:(id<MobeelizerLoginCallback>)callback {
++ (void)loginUser:(NSString *)user andPassword:(NSString *)password withCallback:(id<MobeelizerOperationCallback>)callback {
     [mobeelizer loginUser:user andPassword:password withCallback:callback];
 }
 
-+ (MobeelizerLoginStatus)loginUser:(NSString *)user andPassword:(NSString *)password {
++ (MobeelizerOperationError*)loginUser:(NSString *)user andPassword:(NSString *)password {
     return [mobeelizer loginUser:user andPassword:password];    
 }
 
@@ -382,19 +409,19 @@ static Mobeelizer *mobeelizer = nil;
     return [mobeelizer isLoggedIn];    
 }
 
-+ (MobeelizerSyncStatus)sync {
++ (MobeelizerOperationError*)sync {
     return [mobeelizer sync:FALSE];
 }
 
-+ (MobeelizerSyncStatus)syncAll {
++ (MobeelizerOperationError*)syncAll {
     return [mobeelizer sync:TRUE];
 }
 
-+ (void)syncWithCallback:(id<MobeelizerSyncCallback>)callback {
++ (void)syncWithCallback:(id<MobeelizerOperationCallback>)callback {
     [mobeelizer sync:FALSE withCallback:callback];
 }
 
-+ (void)syncAllWithCallback:(id<MobeelizerSyncCallback>)callback {
++ (void)syncAllWithCallback:(id<MobeelizerOperationCallback>)callback {
     [mobeelizer sync:TRUE withCallback:callback];
 }
 
@@ -422,35 +449,35 @@ static Mobeelizer *mobeelizer = nil;
     return mobeelizer;
 }
 
-+ (MobeelizerCommunicationStatus)registerForRemoteNotificationsWithDeviceToken:(NSData *)token {    
++ (MobeelizerOperationError*)registerForRemoteNotificationsWithDeviceToken:(NSData *)token {    
     return [mobeelizer registerDeviceToken:[[[token description] stringByTrimmingCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"<>"]] stringByReplacingOccurrencesOfString:@" " withString:@""]];
 }
 
-+ (MobeelizerCommunicationStatus)unregisterForRemoteNotifications {    
++ (MobeelizerOperationError*)unregisterForRemoteNotifications {    
     return [mobeelizer unregisterForRemoteNotifications];
 }
 
-+ (MobeelizerCommunicationStatus)sendRemoteNotification:(NSDictionary *)notification {
++ (MobeelizerOperationError*)sendRemoteNotification:(NSDictionary *)notification {
     return [mobeelizer sendRemoteNotification:notification toUsers:nil toGroup:nil onDevice:nil];
 }
 
-+ (MobeelizerCommunicationStatus)sendRemoteNotification:(NSDictionary *)notification toDevice:(NSString *)device {
++ (MobeelizerOperationError*)sendRemoteNotification:(NSDictionary *)notification toDevice:(NSString *)device {
     return [mobeelizer sendRemoteNotification:notification toUsers:nil toGroup:nil onDevice:device];
 }
 
-+ (MobeelizerCommunicationStatus)sendRemoteNotification:(NSDictionary *)notification toUsers:(NSArray *)users {
++ (MobeelizerOperationError*)sendRemoteNotification:(NSDictionary *)notification toUsers:(NSArray *)users {
     return [mobeelizer sendRemoteNotification:notification toUsers:users toGroup:nil onDevice:nil];
 }
 
-+ (MobeelizerCommunicationStatus)sendRemoteNotification:(NSDictionary *)notification toUsers:(NSArray *)users onDevice:(NSString *)device {
++ (MobeelizerOperationError*)sendRemoteNotification:(NSDictionary *)notification toUsers:(NSArray *)users onDevice:(NSString *)device {
     return [mobeelizer sendRemoteNotification:notification toUsers:users toGroup:nil onDevice:device];
 }
 
-+ (MobeelizerCommunicationStatus)sendRemoteNotification:(NSDictionary *)notification toGroup:(NSString *)group {
++ (MobeelizerOperationError*)sendRemoteNotification:(NSDictionary *)notification toGroup:(NSString *)group {
     return [mobeelizer sendRemoteNotification:notification toUsers:nil toGroup:group onDevice:nil];
 }
 
-+ (MobeelizerCommunicationStatus)sendRemoteNotification:(NSDictionary *)notification toGroup:(NSString *)group onDevice:(NSString *)device {
++ (MobeelizerOperationError*)sendRemoteNotification:(NSDictionary *)notification toGroup:(NSString *)group onDevice:(NSString *)device {
     return [mobeelizer sendRemoteNotification:notification toUsers:nil toGroup:group onDevice:device];
 }
 

@@ -93,7 +93,7 @@
 }
 
 - (NSString *)queryForCreate {
-    NSInteger length = [[NSString stringWithFormat:@"%d", self.maxValue] length];
+    NSInteger length = [[NSString stringWithFormat:@"%d", [self.maxValue intValue]] length];
     return [self queryForCreateWithType:[NSString stringWithFormat:@"INTEGER(%d)", length] andDefaultValueQuoting:FALSE];
 }
 

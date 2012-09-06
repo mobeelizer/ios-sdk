@@ -24,6 +24,9 @@
 /* End PBXAggregateTarget section */
 
 /* Begin PBXBuildFile section */
+		C825B8DE15F75C9300BB461B /* MobeelizerOperationError.h in Headers */ = {isa = PBXBuildFile; fileRef = C825B8DC15F75C9300BB461B /* MobeelizerOperationError.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		C825B8DF15F75C9300BB461B /* MobeelizerOperationError.m in Sources */ = {isa = PBXBuildFile; fileRef = C825B8DD15F75C9300BB461B /* MobeelizerOperationError.m */; };
+		C825B8E315F75EE700BB461B /* MobeelizerOperationError+Internal.h in Headers */ = {isa = PBXBuildFile; fileRef = C825B8E115F75EE700BB461B /* MobeelizerOperationError+Internal.h */; };
 		C82A4C40150101F900D7B591 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = C82A4C3F150101E200D7B591 /* InfoPlist.strings */; };
 		C82A4C60150106D600D7B591 /* Mobeelizer.m in Sources */ = {isa = PBXBuildFile; fileRef = C83D24DB14FB82E600F015BB /* Mobeelizer.m */; };
 		C82A4C611501070400D7B591 /* MobeelizerFile.m in Sources */ = {isa = PBXBuildFile; fileRef = C83D259E14FBB9E500F015BB /* MobeelizerFile.m */; };
@@ -214,6 +217,9 @@
 		C81633D014FE45BD00E1DDAB /* MobeelizerDatabase+Internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "MobeelizerDatabase+Internal.h"; sourceTree = "<group>"; };
 		C81633D414FE470A00E1DDAB /* Mobeelizer+Internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "Mobeelizer+Internal.h"; sourceTree = "<group>"; };
 		C81633DC14FE48EC00E1DDAB /* MobeelizerModelCredentials+Internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "MobeelizerModelCredentials+Internal.h"; sourceTree = "<group>"; };
+		C825B8DC15F75C9300BB461B /* MobeelizerOperationError.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MobeelizerOperationError.h; sourceTree = "<group>"; };
+		C825B8DD15F75C9300BB461B /* MobeelizerOperationError.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MobeelizerOperationError.m; sourceTree = "<group>"; };
+		C825B8E115F75EE700BB461B /* MobeelizerOperationError+Internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "MobeelizerOperationError+Internal.h"; sourceTree = "<group>"; };
 		C82A4A8D14FE4DFF00D7B591 /* MobeelizerFieldCredentials+Internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "MobeelizerFieldCredentials+Internal.h"; sourceTree = "<group>"; };
 		C82A4A9214FE4F4400D7B591 /* MobeelizerFieldDefinition+Internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "MobeelizerFieldDefinition+Internal.h"; sourceTree = "<group>"; };
 		C82A4A9614FE4F8300D7B591 /* MobeelizerModelDefinition+Internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "MobeelizerModelDefinition+Internal.h"; sourceTree = "<group>"; };
@@ -572,6 +578,9 @@
 				C8F8B64B1566794B00D38924 /* Mobeelizer+Dictionary.h */,
 				C81633D414FE470A00E1DDAB /* Mobeelizer+Internal.h */,
 				C83D24DB14FB82E600F015BB /* Mobeelizer.m */,
+				C825B8DC15F75C9300BB461B /* MobeelizerOperationError.h */,
+				C825B8E115F75EE700BB461B /* MobeelizerOperationError+Internal.h */,
+				C825B8DD15F75C9300BB461B /* MobeelizerOperationError.m */,
 				C83D256C14FB8EAB00F015BB /* Files */,
 				C83D256414FB8E2000F015BB /* Connection */,
 				C83D256314FB8E0600F015BB /* Database */,
@@ -724,6 +733,7 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C825B8DE15F75C9300BB461B /* MobeelizerOperationError.h in Headers */,
 				C88EBA1A150A09BE00E26149 /* MobeelizerDisjunction.h in Headers */,
 				C88EBA1E150A09D200E26149 /* MobeelizerConjunction.h in Headers */,
 				C88EBA0A1509019600E26149 /* MobeelizerOrder.h in Headers */,
@@ -811,6 +821,7 @@
 				C83224B1152C6D540077DD22 /* unzip.h in Headers */,
 				C83224B3152C6D540077DD22 /* zip.h in Headers */,
 				C83224C0152D92E60077DD22 /* MobeelizerSyncManager.h in Headers */,
+				C825B8E315F75EE700BB461B /* MobeelizerOperationError+Internal.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1037,6 +1048,7 @@
 				C83224B0152C6D540077DD22 /* unzip.c in Sources */,
 				C83224B2152C6D540077DD22 /* zip.c in Sources */,
 				C83224C1152D92E60077DD22 /* MobeelizerSyncManager.m in Sources */,
+				C825B8DF15F75C9300BB461B /* MobeelizerOperationError.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

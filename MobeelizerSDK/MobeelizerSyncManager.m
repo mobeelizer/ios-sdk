@@ -23,6 +23,7 @@
 #import "Mobeelizer+Internal.h"
 #import "MobeelizerDatabase+Internal.h"
 #import "MobeelizerDataFileManager.h"
+#import "MobeelizerOperationError+Internal.h"
 
 @interface MobeelizerSyncManager ()
 
@@ -50,15 +51,17 @@
     return self;
 }
 
-- (MobeelizerSyncStatus)sync:(BOOL)all {
+- (MobeelizerOperationError*)sync:(BOOL)all {
     if(![self startSyncProcess]) {
-        return MobeelizerSyncStatusNone;
+        return nil;
     }
     
     NSFileManager *fileManager = [NSFileManager defaultManager];
     
     NSString *inputDataPath = nil;
     NSString *outputDataPath = nil;
+    
+    MobeelizerOperationError *error = nil;
     
     @try {                
         [self.mobeelizer.database lockModifiedFlag];
@@ -67,64 +70,81 @@
         
         if (all) {
             MobeelizerLog(@"Send sync all request.");
+            ticket = [self.mobeelizer.connectionManager requestSyncAllReturningError:&error];
             
-            ticket = [self.mobeelizer.connectionManager requestSyncAll];
+            if(error != nil) {
+                [self updateSyncStatus:MobeelizerSyncStatusFinishedWithFailure];
+                return error;
+            }
         } else {            
             outputDataPath = [NSTemporaryDirectory() stringByAppendingPathComponent:[NSString stringWithFormat:@"output%d.dat", (rand() % 74)]];
             
-            BOOL prepareOutputFileSuccess = [self.dataFileManager prepareOutputFile:outputDataPath];
+            [self.dataFileManager prepareOutputFile:outputDataPath returningError:&error];
 
-            if (!prepareOutputFileSuccess) {
-                MobeelizerLog(@"Send file haven't been created.");
-                return MobeelizerSyncStatusFinishedWithFailure;
+            if (error != nil) {
+                [self updateSyncStatus:MobeelizerSyncStatusFinishedWithFailure];                
+                return error;
             }
             
             [self updateSyncStatus:MobeelizerSyncStatusFileCreated];
             
             MobeelizerLog(@"Send sync diff request.");
             
-            ticket = [self.mobeelizer.connectionManager requestSyncDiff:outputDataPath];
+            ticket = [self.mobeelizer.connectionManager requestSyncDiff:outputDataPath returningError:&error];
+            
+            if(error != nil) {
+                [self updateSyncStatus:MobeelizerSyncStatusFinishedWithFailure];
+                return error;
+            }
         }
  
         MobeelizerLog(@"Sync request completed: %@", ticket);
         
         [self updateSyncStatus:MobeelizerSyncStatusTaskCreated];
         
-        BOOL syncRequestCompleteSuccess = [self.mobeelizer.connectionManager waitUntilSyncRequestComplete:ticket];
+        [self.mobeelizer.connectionManager waitUntilSyncRequestComplete:ticket returningError:&error];
         
-        if (!syncRequestCompleteSuccess) {
+        if(error != nil) {
             [self updateSyncStatus:MobeelizerSyncStatusFinishedWithFailure];
-            return MobeelizerSyncStatusFinishedWithFailure;
+            return error;
         }
         
         MobeelizerLog(@"Sync process complete with success.");
     
         [self updateSyncStatus:MobeelizerSyncStatusTaskPerformed];
 
-        inputDataPath = [self.mobeelizer.connectionManager getSyncData:ticket];
+        inputDataPath = [self.mobeelizer.connectionManager getSyncData:ticket returningError:&error];
+        
+        if(error != nil) {
+            [self updateSyncStatus:MobeelizerSyncStatusFinishedWithFailure];
+            return error;
+        }
         
         [self updateSyncStatus:MobeelizerSyncStatusFileReceived];
     
-        BOOL processInputFileSuccess = [self.dataFileManager processInputFile:inputDataPath andSyncAll:all];
+        [self.dataFileManager processInputFile:inputDataPath andSyncAll:all returningError:&error];
 
-        if (!processInputFileSuccess) {
+        if (error != nil) {
             [self updateSyncStatus:MobeelizerSyncStatusFinishedWithFailure];
-            return MobeelizerSyncStatusFinishedWithFailure;
+            return error;
         }
             
-        [self.mobeelizer.connectionManager confirmTask:ticket];
+        [self.mobeelizer.connectionManager confirmTask:ticket returningError:&error];
 
+        if(error != nil) {
+            [self updateSyncStatus:MobeelizerSyncStatusFinishedWithFailure];
+            return error;
+        }
+        
         [self.mobeelizer.database clearModifiedFlag];
 
         [self.mobeelizer.internalDatabase setInitialSyncAsNotRequiredForInstance:self.mobeelizer.instance andUser:self.mobeelizer.user];
     
         [self updateSyncStatus:MobeelizerSyncStatusFinishedWithSuccess];
-        
-        return MobeelizerSyncStatusFinishedWithSuccess;
     } @catch (NSException *exception) {
         MobeelizerLog(@"Exception while sync: %@", [exception reason]);
         [self updateSyncStatus:MobeelizerSyncStatusFinishedWithFailure];
-        return MobeelizerSyncStatusFinishedWithFailure;
+        return [[MobeelizerOperationError alloc] initWithException:exception];
     } @finally {        
         NSError *error;
         
@@ -139,10 +159,13 @@
         [self.mobeelizer.database unlockModifiedFlag];
         
         if ([self isRunning]) {
-            MobeelizerLog(@"Sync process complete with failure.");
+            MobeelizerSyncStatus status = self.syncStatus;
             [self updateSyncStatus:MobeelizerSyncStatusFinishedWithFailure];
+            return [[MobeelizerOperationError alloc] initWithCode:MOBEELIZER_OPERATION_CODE_OTHER andMessage:[NSString stringWithFormat:@"Sync process still running: %d", status]];
         }
     }
+    
+    return nil;
 }
 
 - (void)registerSyncStatusListener:(id<MobeelizerSyncListener>)listener {

@@ -20,13 +20,14 @@
 
 #import <Foundation/Foundation.h>
 #import "Mobeelizer.h"
+#import "MobeelizerOperationError.h"
 
 @interface MobeelizerSyncManager : NSObject
 
 @property (nonatomic) MobeelizerSyncStatus syncStatus;
 
 - (id)initWithMobeelizer:(Mobeelizer *)mobeelizer;
-- (MobeelizerSyncStatus)sync:(BOOL)all;
+- (MobeelizerOperationError*)sync:(BOOL)all;
 - (void)registerSyncStatusListener:(id<MobeelizerSyncListener>)listener;
 
 @end

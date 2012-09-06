@@ -20,6 +20,7 @@
 
 #import "MobeelizerDatabase.h"
 #import "MobeelizerDatabase+Dictionary.h"
+#import "MobeelizerOperationError.h"
 
 @interface MobeelizerDatabase ()
 
@@ -28,7 +29,7 @@
 - (void)lockModifiedFlag;
 - (void)clearModifiedFlag;
 - (void)unlockModifiedFlag;
-- (BOOL)updateEntitiesFromSync:(NSData *)data withAll:(BOOL)all;
+- (void)updateEntitiesFromSync:(NSData *)data withAll:(BOOL)all returningError:(MobeelizerOperationError**)error;
 - (NSData *)getEntitiesToSync;
 - (id)execQuery:(NSString *)query withParams:(NSArray *)params withModel:(MobeelizerModelDefinition *)model withSelector:(SEL)selector;
 - (void)addFile:(NSString *)guid andPath:(NSString *)path;

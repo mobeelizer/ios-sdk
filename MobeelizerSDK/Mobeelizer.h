@@ -22,14 +22,7 @@
 
 @class MobeelizerDatabase;
 @class MobeelizerFile;
-
-typedef enum {
-    MobeelizerLoginStatusOk = 1,
-    MobeelizerLoginStatusAuthenticationFailure = -1,
-    MobeelizerLoginStatusConnectionFailure = -2,
-    MobeelizerLoginStatusMissingConnectionFailure = -3,
-    MobeelizerLoginStatusOtherFailure = -4
-} MobeelizerLoginStatus;    
+@class MobeelizerOperationError;
 
 typedef enum {
     MobeelizerSyncStatusNone = -1,
@@ -43,13 +36,6 @@ typedef enum {
 } MobeelizerSyncStatus;
 
 typedef enum {
-    MobeelizerCommunicationStatusSuccess = 1,
-    MobeelizerCommunicationStatusConnectionFailure = -1,
-    MobeelizerCommunicationStatusResponseFailure = -2,
-    MobeelizerCommunicationStatusOtherFailure = -3
-} MobeelizerCommunicationStatus;    
-
-typedef enum {
     MobeelizerCredentialNone = 0,
     MobeelizerCredentialOwn,
     MobeelizerCredentialGroup,
@@ -60,53 +46,19 @@ typedef enum {
  * Callback used to notify when the async synchronization is finished.
  */
 
-@protocol MobeelizerSyncCallback <NSObject>
+@protocol MobeelizerOperationCallback <NSObject>
 
 /**
- * Method invoked when the synchronization is finished.
- * 
- * The possible values of sync status:
+ * Method invoked when the operation is finished with failure.
  *
- * - MobeelizerSyncStatusNone - Sync has not been executed in the existing user session.
- * - MobeelizerSyncStatusStarted - Sync is in progress.  The file with local changes is being prepared.
- * - MobeelizerSyncStatusFileCreated - Sync is in progress. The file with local changes has been prepared and now is being transmitted to the cloud.
- * - MobeelizerSyncStatusTaskCreated - Sync is in progress. The file with local changes has been transmitted to the cloud. Waiting for the cloud to finish processing sync.
- * - MobeelizerSyncStatusTaskPerformed - Sync is in progress. The file with cloud changes has been prepared and now is being transmitted to the device.
- * - MobeelizerSyncStatusFileReceived - Sync is in progress. The file with cloud changes has been transmitted to the device cloud and now is being inserted into local database.
- * - MobeelizerSyncStatusFinishedWithSuccess - Sync has been finished successfully.
- * - MobeelizerSyncStatusFinishedWithFailure - Sync has not been finished successfully. Look for the explanation in the application logs.
- *
- * @param status The sync status.
- * @see [Mobeelizer syncWithCallback:]
- * @see [Mobeelizer syncAllWithCallback:] 
+ * @param error The operation error.
  */
-- (void)onSyncFinished:(MobeelizerSyncStatus)status;
-
-@end
+- (void)onFailure:(MobeelizerOperationError*)error;
 
 /**
- * Callback used to notify when the async login is finished.
+ * Method invoked when the operation is finished with success.
  */
-
-@protocol MobeelizerLoginCallback <NSObject>
-
-/**
- * Method invoked when the login is finished.
- * 
- * The possible values of login status:
- *
- * - MobeelizerLoginStatusOk - The user session has been successfully created.
- * - MobeelizerLoginStatusAuthenticationFailure - Login, password and instance do not match to any existing users.
- * - MobeelizerLoginStatusConnectionFailure - Connection error. Look for the explanation in the application logs.
- * - MobeelizerLoginStatusMissingConnectionFailure - Missing connection. First login requires active Internet connection.
- * - MobeelizerLoginStatusOtherFailure - Unknown error. Look for the explanation in the instance logs and the application logs.
- *
- * @param status The login status.
- * @see [Mobeelizer loginToInstance:withUser:andPassword:withCallback:]
- * @see [Mobeelizer loginUser:andPassword:withCallback:]
- */
-
-- (void)onLoginFinished:(MobeelizerSyncStatus)status;
+- (void)onSuccess;
 
 @end
 
@@ -174,27 +126,19 @@ typedef enum {
  * @param user User.
  * @param password Password.
  * @param callback Callback. 
- * @see MobeelizerLoginCallback
+ * @see MobeelizerOperationCallback
  */
-+ (void)loginToInstance:(NSString *)instance withUser:(NSString *)user andPassword:(NSString *)password withCallback:(id<MobeelizerLoginCallback>)callback;
++ (void)loginToInstance:(NSString *)instance withUser:(NSString *)user andPassword:(NSString *)password withCallback:(id<MobeelizerOperationCallback>)callback;
 
 /**
  * Create a user session for the given login, password and instance. This version of method is synchronous and lock the invoker thread. Do not call this method in UI thread.
  *
- * The possible values of login status:
- *
- * - MobeelizerLoginStatusOk - The user session has been successfully created.
- * - MobeelizerLoginStatusAuthenticationFailure - Login, password and instance do not match to any existing users.
- * - MobeelizerLoginStatusConnectionFailure - Connection error. Look for the explanation in the application logs.
- * - MobeelizerLoginStatusMissingConnectionFailure - Missing connection. First login requires active Internet connection.
- * - MobeelizerLoginStatusOtherFailure - Unknown error. Look for the explanation in the instance logs and the application logs.
- *
  * @param instance Instance's name.
  * @param user User.
  * @param password Password.
- * @return Login status.
+ * @return Null if success, error otherwise.
  */
-+ (MobeelizerLoginStatus)loginToInstance:(NSString *)instance withUser:(NSString *)user andPassword:(NSString *)password;
++ (MobeelizerOperationError*)loginToInstance:(NSString *)instance withUser:(NSString *)user andPassword:(NSString *)password;
 
 /**
  * Create a user session for the given login, password and instance equal to the mode ("test" or "production").
@@ -203,27 +147,19 @@ typedef enum {
  * @param password Password.
  * @param callback Callback.
  * @see loginToInstance:withUser:andPassword:withCallback:
- * @see MobeelizerLoginCallback
+ * @see MobeelizerOperationCallback
  */
-+ (void)loginUser:(NSString *)user andPassword:(NSString *)password withCallback:(id<MobeelizerLoginCallback>)callback;
++ (void)loginUser:(NSString *)user andPassword:(NSString *)password withCallback:(id<MobeelizerOperationCallback>)callback;
 
 /**
  * Create a user session for the given login, password and instance equal to the mode ("test" or "production"). This version of method is synchronous and lock the invoker thread. Do not call this method in UI thread.
  *
- * The possible values of login status:
- *
- * - MobeelizerLoginStatusOk - The user session has been successfully created.
- * - MobeelizerLoginStatusAuthenticationFailure - Login, password and instance do not match to any existing users.
- * - MobeelizerLoginStatusConnectionFailure - Connection error. Look for the explanation in the application logs.
- * - MobeelizerLoginStatusMissingConnectionFailure - Missing connection. First login requires active Internet connection.
- * - MobeelizerLoginStatusOtherFailure - Unknown error. Look for the explanation in the instance logs and the application logs.
- *
  * @param user User.
  * @param password Password.
- * @return Login status.
+ * @return Null if success, error otherwise.
  * @see loginToInstance:withUser:andPassword:
  */
-+ (MobeelizerLoginStatus)loginUser:(NSString *)user andPassword:(NSString *)password;
++ (MobeelizerOperationError*)loginUser:(NSString *)user andPassword:(NSString *)password;
 
 /**
  *  Check if the user session is active.
@@ -256,46 +192,36 @@ typedef enum {
 /**
  * Start a differential sync. This version of method is synchronous and lock the invoker thread. Do not call this method in UI thread.
  *
- * The possible values of sync status:
- *
- * - MobeelizerSyncStatusFinishedWithSuccess - Sync has been finished successfully.
- * - MobeelizerSyncStatusFinishedWithFailure - Sync has not been finished successfully. Look for the explanation in the application logs.
- *
- * @return Sync status.
+ * @return Null if success, error otherwise.
  * @see syncWithCallback:
  */
-+ (MobeelizerSyncStatus)sync;
++ (MobeelizerOperationError*)sync;
 
 /**
  * Start a differential sync and wait until it finishes.
  *
  * @param callback Callback.
- * @see MobeelizerSyncCallback
+ * @see MobeelizerOperationCallback
  * @see sync
  */
-+ (void)syncWithCallback:(id<MobeelizerSyncCallback>)callback;
++ (void)syncWithCallback:(id<MobeelizerOperationCallback>)callback;
 
 /**
  * Start a full sync. This version of method is synchronous and lock the invoker thread. Do not call this method in UI thread.
  *
- * The possible values of sync status:
- *
- * - MobeelizerSyncStatusFinishedWithSuccess - Sync has been finished successfully.
- * - MobeelizerSyncStatusFinishedWithFailure - Sync has not been finished successfully. Look for the explanation in the application logs.
- *
- * @return Sync status. 
+ * @return Null if success, error otherwise.
  * @see syncAllWithCallback:
  */
-+ (MobeelizerSyncStatus)syncAll;
++ (MobeelizerOperationError*)syncAll;
 
 /**
  * Start a full sync and wait until it finishes.
  *
  * @param callback Callback.
- * @see MobeelizerSyncCallback
+ * @see MobeelizerOperationCallback
  * @see syncAll
  */
-+ (void)syncAllWithCallback:(id<MobeelizerSyncCallback>)callback;
++ (void)syncAllWithCallback:(id<MobeelizerOperationCallback>)callback;
 
 /**
  * Check and return the status of current sync.
@@ -354,127 +280,71 @@ typedef enum {
 /**
  * Register the token received from Apple Push Notification Service.
  *
- * The possible values of operation status:
- * 
- * - MobeelizerCommunicationStatusSuccess - The operation has finished successfully.
- * - MobeelizerCommunicationStatusConnectionFailure - The operation has failed because of an connection error.
- * - MobeelizerCommunicationStatusResponseFailure - The operation has failed because of an invalid response error.
- * - MobeelizerCommunicationStatusOtherFailure - The operatioIn has failed.
- *
  * @param token Device token.
- * @return Operation status.
+ * @return Null if success, error otherwise.
  */
-+ (MobeelizerCommunicationStatus)registerForRemoteNotificationsWithDeviceToken:(NSData *)token;
++ (MobeelizerOperationError*)registerForRemoteNotificationsWithDeviceToken:(NSData *)token;
 
 /**
  * Unregister device from Apple Push Notification Service.
  *
- * The possible values of operation status:
- * 
- * - MobeelizerCommunicationStatusSuccess - The operation has finished successfully.
- * - MobeelizerCommunicationStatusConnectionFailure - The operation has failed because of an connection error.
- * - MobeelizerCommunicationStatusResponseFailure - The operation has failed because of an invalid response error.
- * - MobeelizerCommunicationStatusOtherFailure - The operation has failed.
- *
- * @return Operation status.
+ * @return Null if success, error otherwise.
  */
-+ (MobeelizerCommunicationStatus)unregisterForRemoteNotifications;
++ (MobeelizerOperationError*)unregisterForRemoteNotifications;
 
 /**
  * Broadcast the remote notification.
  *
- * The possible values of operation status:
- * 
- * - MobeelizerCommunicationStatusSuccess - The operation has finished successfully.
- * - MobeelizerCommunicationStatusConnectionFailure - The operation has failed because of an connection error.
- * - MobeelizerCommunicationStatusResponseFailure - The operation has failed because of an invalid response error.
- * - MobeelizerCommunicationStatusOtherFailure - The operation has failed.
- *
  * @param notification Notification to send.
- * @return Operation status.
+ * @return Null if success, error otherwise.
  */
-+ (MobeelizerCommunicationStatus)sendRemoteNotification:(NSDictionary *)notification;
++ (MobeelizerOperationError*)sendRemoteNotification:(NSDictionary *)notification;
 
 /**
  * Broadcast the remote notification to given device.
  *
- * The possible values of operation status:
- * 
- * - MobeelizerCommunicationStatusSuccess - The operation has finished successfully.
- * - MobeelizerCommunicationStatusConnectionFailure - The operation has failed because of an connection error.
- * - MobeelizerCommunicationStatusResponseFailure - The operation has failed because of an invalid response error.
- * - MobeelizerCommunicationStatusOtherFailure - The operation has failed.
- *
  * @param notification Notification to send.
  * @param device Recipients' device.
- * @return Operation status.
+ * @return Null if success, error otherwise.
  */
-+ (MobeelizerCommunicationStatus)sendRemoteNotification:(NSDictionary *)notification toDevice:(NSString *)device;
++ (MobeelizerOperationError*)sendRemoteNotification:(NSDictionary *)notification toDevice:(NSString *)device;
 
 /**
  * Send the remote notification to given users.
  *
- * The possible values of operation status:
- * 
- * - MobeelizerCommunicationStatusSuccess - The operation has finished successfully.
- * - MobeelizerCommunicationStatusConnectionFailure - The operation has failed because of an connection error.
- * - MobeelizerCommunicationStatusResponseFailure - The operation has failed because of an invalid response error.
- * - MobeelizerCommunicationStatusOtherFailure - The operation has failed.
- *
  * @param notification Notification to send.
  * @param users Lists of recipients.
- * @return Operation status.
+ * @return Null if success, error otherwise.
  */
-+ (MobeelizerCommunicationStatus)sendRemoteNotification:(NSDictionary *)notification toUsers:(NSArray *)users;
++ (MobeelizerOperationError*)sendRemoteNotification:(NSDictionary *)notification toUsers:(NSArray *)users;
 
 /**
  * Send the remote notification to given users and device.
  *
- * The possible values of operation status:
- * 
- * - MobeelizerCommunicationStatusSuccess - The operation has finished successfully.
- * - MobeelizerCommunicationStatusConnectionFailure - The operation has failed because of an connection error.
- * - MobeelizerCommunicationStatusResponseFailure - The operation has failed because of an invalid response error.
- * - MobeelizerCommunicationStatusOtherFailure - The operation has failed.
- *
  * @param notification Notification to send.
  * @param users Lists of recipients.
  * @param device Recipients' device. 
- * @return Operation status.
+ * @return Null if success, error otherwise.
  */
-+ (MobeelizerCommunicationStatus)sendRemoteNotification:(NSDictionary *)notification toUsers:(NSArray *)users onDevice:(NSString *)device;
++ (MobeelizerOperationError*)sendRemoteNotification:(NSDictionary *)notification toUsers:(NSArray *)users onDevice:(NSString *)device;
 
 /**
  * Send the remote notification to given users' group.
  *
- * The possible values of operation status:
- * 
- * - MobeelizerCommunicationStatusSuccess - The operation has finished successfully.
- * - MobeelizerCommunicationStatusConnectionFailure - The operation has failed because of an connection error.
- * - MobeelizerCommunicationStatusResponseFailure - The operation has failed because of an invalid response error.
- * - MobeelizerCommunicationStatusOtherFailure - The operation has failed.
- *
  * @param notification Notification to send.
  * @param group Recipients' group.
- * @return Operation status.
+ * @return Null if success, error otherwise.
  */
-+ (MobeelizerCommunicationStatus)sendRemoteNotification:(NSDictionary *)notification toGroup:(NSString *)group;
++ (MobeelizerOperationError*)sendRemoteNotification:(NSDictionary *)notification toGroup:(NSString *)group;
 
 /**
  * Send the remote notification to given group and device.
  *
- * The possible values of operation status:
- * 
- * - MobeelizerCommunicationStatusSuccess - The operation has finished successfully.
- * - MobeelizerCommunicationStatusConnectionFailure - The operation has failed because of an connection error.
- * - MobeelizerCommunicationStatusResponseFailure - The operation has failed because of an invalid response error.
- * - MobeelizerCommunicationStatusOtherFailure - The operation has failed.
- *
  * @param notification Notification to send.
  * @param group Recipients' group.
  * @param device Recipients' device.
- * @return Operation status.
+ * @return Null if success, error otherwise.
  */
-+ (MobeelizerCommunicationStatus)sendRemoteNotification:(NSDictionary *)notification toGroup:(NSString *)group onDevice:(NSString *)device;
++ (MobeelizerOperationError*)sendRemoteNotification:(NSDictionary *)notification toGroup:(NSString *)group onDevice:(NSString *)device;
 
 @end

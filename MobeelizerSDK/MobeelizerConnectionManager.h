@@ -20,6 +20,7 @@
 
 #import <Foundation/Foundation.h>
 #import "Mobeelizer.h"
+#import "MobeelizerOperationError.h"
 
 @interface MobeelizerConnectionManager : NSObject
 
@@ -30,16 +31,16 @@
 @property (nonatomic, strong) NSString *instanceGuid;
 @property (nonatomic) BOOL initialSyncRequired;
 
-- (MobeelizerLoginStatus)loginToInstance:(NSString *)instance withUser:(NSString *)user andPassword:(NSString *)password;
+- (void)loginToInstance:(NSString *)instance withUser:(NSString *)user andPassword:(NSString *)password returningError:(MobeelizerOperationError**)error;
 - (void)logout;
 - (BOOL)isLoggedIn;
-- (NSString *)requestSyncAll;
-- (NSString *)requestSyncDiff:(NSString *)dataPath;
-- (BOOL)waitUntilSyncRequestComplete:(NSString *)ticket;
-- (NSString *)getSyncData:(NSString *)ticket;
-- (void)confirmTask:(NSString *)ticket;
-- (MobeelizerCommunicationStatus)sendRemoteNotification:(NSDictionary *)notification toUsers:(NSArray *)users toGroup:(NSString *)group onDevice:(NSString *)device;
-- (MobeelizerCommunicationStatus)registerDeviceToken:(NSString *)token;
-- (MobeelizerCommunicationStatus)unregisterForRemoteNotifications;
+- (NSString *)requestSyncAllReturningError:(MobeelizerOperationError**)error;
+- (NSString *)requestSyncDiff:(NSString *)dataPath returningError:(MobeelizerOperationError**)error;
+- (void)waitUntilSyncRequestComplete:(NSString *)ticket returningError:(MobeelizerOperationError**)error;
+- (NSString *)getSyncData:(NSString *)ticket returningError:(MobeelizerOperationError**)error;
+- (void)confirmTask:(NSString *)ticket returningError:(MobeelizerOperationError**)error;
+- (void)sendRemoteNotification:(NSDictionary *)notification toUsers:(NSArray *)users toGroup:(NSString *)group onDevice:(NSString *)device returningError:(MobeelizerOperationError**)error;
+- (void)registerDeviceToken:(NSString *)token returningError:(MobeelizerOperationError**)error;
+- (void)unregisterForRemoteNotificationsReturningError:(MobeelizerOperationError**)error;
 
 @end

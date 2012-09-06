@@ -119,7 +119,7 @@
     if(defaultValue == nil) {
         return nil;
     } else {
-        return [NSString stringWithFormat:@"%f", defaultValue];
+        return [NSString stringWithFormat:@"%f", [defaultValue doubleValue]];
     }
 }
 

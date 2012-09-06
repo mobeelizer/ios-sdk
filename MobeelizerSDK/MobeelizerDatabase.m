@@ -29,6 +29,7 @@
 #import "MobeelizerDefinitionManager.h"
 #import "Mobeelizer+Internal.h"
 #import "MobeelizerFieldDefinition.h"
+#import "MobeelizerOperationError+Internal.h"
 
 #define SQL_DATABASE_NAME @"%@_%@_data"
 #define SQL_UPDATE_MODIFIED @"UPDATE %@ SET _modified = %d WHERE _modified = %d"
@@ -322,10 +323,8 @@
     }    
 }
 
-- (BOOL)updateEntitiesFromSync:(NSData *)data withAll:(BOOL)all {    
+- (void)updateEntitiesFromSync:(NSData *)data withAll:(BOOL)all returningError:(MobeelizerOperationError**)error {
     MobeelizerSqlite3Database *localDatabase = [[MobeelizerSqlite3Database alloc] initWithName:[NSString stringWithFormat:SQL_DATABASE_NAME, self.mobeelizer.instanceGuid, self.mobeelizer.user]];
-    
-    BOOL isTransactionSuccessful = TRUE;
     
     @try {    
         NSArray *lines = [[[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding] componentsSeparatedByString:@"\n"];
@@ -343,13 +342,13 @@
                 continue;
             }
             
-            NSError* error = nil;
+            NSError* jsonError = nil;
             
-            NSDictionary* json = [NSJSONSerialization JSONObjectWithData:[line dataUsingEncoding:NSUTF8StringEncoding] options:kNilOptions error:&error];
+            NSDictionary* json = [NSJSONSerialization JSONObjectWithData:[line dataUsingEncoding:NSUTF8StringEncoding] options:kNilOptions error:&jsonError];
             
-            if(error != nil) {
-                MobeelizerLog(@"JSON parser has failed: %@ for data: [%@]", [error localizedDescription], line);
-                isTransactionSuccessful = FALSE;
+            if(jsonError != nil) {
+                MobeelizerLog(@"JSON parser has failed: %@ for data: [%@]", [jsonError localizedDescription], line);
+                *error = [[MobeelizerOperationError alloc] initWithError:jsonError];
                 break;
             }
             
@@ -368,16 +367,15 @@
             id object = [model convertJsonToObject:json];
             
             if(object == nil) {
-                isTransactionSuccessful = FALSE;
+                *error = [[MobeelizerOperationError alloc] initWithCode:MOBEELIZER_OPERATION_CODE_OTHER andMessage:[NSString stringWithFormat:@"Cannot convert JSON to database entity: %@", line]];
                 break;
             }
             
-            MobeelizerErrors *errors = [[MobeelizerErrors alloc] init]; // @TODO [model validate:object] - relation must exists problem;
-         
-            if(![errors isValid]) {
-                isTransactionSuccessful = FALSE;
-                break;
-            }
+            // MobeelizerErrors *errors = [[MobeelizerErrors alloc] init]; // @TODO [model validate:object] - relation must exists problem;
+            // if(![errors isValid]) {
+            // *error = ...;
+            // break;
+            // }
             
             if([json valueForKey:@"fields"] == nil) {
                 NSArray *params = [model paramsForUpdateWithoutFields:object withModified:FALSE withDeleted:deleted withConflicted:conflicted];
@@ -401,16 +399,16 @@
             }
         }
         
-        if (isTransactionSuccessful) {
+        if (*error == nil) {
             [localDatabase commitTransaction];
         } else {
             [localDatabase rollbackTransaction];
         }
-    } @finally {        
+    } @catch (NSException * e) {
+        *error = [[MobeelizerOperationError alloc] initWithException:e];
+    } @finally {
         [localDatabase destroy];
     }
-
-    return isTransactionSuccessful;
 }
 
 - (NSData *)getEntitiesToSync {

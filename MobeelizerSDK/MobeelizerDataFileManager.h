@@ -19,13 +19,14 @@
 // 
 
 #import <Foundation/Foundation.h>
+#import "MobeelizerOperationError.h"
 
 @class Mobeelizer;
 
 @interface MobeelizerDataFileManager : NSObject
 
 - (id)initWithMobeelizer:(Mobeelizer *)mobeelizer;
-- (BOOL)prepareOutputFile:(NSString *)dataFilePath;
-- (BOOL)processInputFile:(NSString *)dataFilePath andSyncAll:(BOOL)all;
+- (void)prepareOutputFile:(NSString *)dataFilePath returningError:(MobeelizerOperationError**)error;
+- (void)processInputFile:(NSString *)dataFilePath andSyncAll:(BOOL)all returningError:(MobeelizerOperationError**)error;
 
 @end
