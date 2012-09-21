@@ -87,7 +87,7 @@ static Mobeelizer *mobeelizer = nil;
         
         MobeelizerLog(@"Creating Mobeelizer SDK %@", [Mobeelizer version]);
         
-        _device = [configuration objectForKey:META_DEVICE];
+        _device = configuration[META_DEVICE];
 
         if(self.device == nil) {
             MobeelizerException(@"Missing configuration parameter", @"%@ must be set in configuration file.", META_DEVICE);
@@ -95,7 +95,7 @@ static Mobeelizer *mobeelizer = nil;
         
         MobeelizerLog(@"Device: %@", self.device);
         
-        NSString *modelPrefix = [configuration objectForKey:META_MODEL_PREFIX];
+        NSString *modelPrefix = configuration[META_MODEL_PREFIX];
         
         if(modelPrefix == nil) {
             MobeelizerLog(@"Model Prefix is null - application is working in NSDictionary mode.");
@@ -103,11 +103,11 @@ static Mobeelizer *mobeelizer = nil;
             MobeelizerLog(@"Model Prefix: %@.", modelPrefix);            
         }
         
-        NSString *developmentRole = [configuration objectForKey:META_DEVELOPMENT_ROLE];
+        NSString *developmentRole = configuration[META_DEVELOPMENT_ROLE];
         
         MobeelizerLog(@"Development Role: %@.", developmentRole);
         
-        _mode = [configuration objectForKey:META_MODE];
+        _mode = configuration[META_MODE];
         
         if(self.mode == nil) {
             _mode = MODE_DEVELOPMENT;
@@ -123,7 +123,7 @@ static Mobeelizer *mobeelizer = nil;
             MobeelizerException(@"Missing development role", @"%@ must be set in configuration if %@ is set to %@.", META_DEVELOPMENT_ROLE, META_MODE, MODE_DEVELOPMENT);
         }
         
-        NSString *definitionAsset = [configuration objectForKey:META_DEFINITION_ASSET];
+        NSString *definitionAsset = configuration[META_DEFINITION_ASSET];
         
         if(definitionAsset == nil) {
             definitionAsset = @"application.xml";
@@ -131,7 +131,7 @@ static Mobeelizer *mobeelizer = nil;
         
         MobeelizerLog(@"Definition Asset: %@", definitionAsset);        
         
-        NSString *stringUrl = [configuration objectForKey:META_URL];
+        NSString *stringUrl = configuration[META_URL];
         
         if(stringUrl == nil) {
             if([self.mode isEqualToString:MODE_PRODUCTION]) {
@@ -368,7 +368,7 @@ static Mobeelizer *mobeelizer = nil;
 }
 
 - (MobeelizerFile *)createFile:(NSString *)name withGuid:(NSString *)guid {
-    MobeelizerLog(@"Create file: %@, %@", name, guid);    
+    MobeelizerLog(@"Create file: %@, %@", name, guid);
     return [[MobeelizerFile alloc] initWithGuid:guid andName:name andMobeelizer:self];
 }
 

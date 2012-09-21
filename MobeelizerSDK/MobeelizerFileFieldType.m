@@ -76,14 +76,14 @@
     
     if(guid != nil) {
         NSString *name = [row valueForKey:[NSString stringWithFormat:@"%@_name", self.name]];    
-        value = [NSDictionary dictionaryWithObjects:[NSArray arrayWithObjects:guid, name, nil] forKeys:[NSArray arrayWithObjects:@"guid", @"filename", nil]];
+        value = [NSDictionary dictionaryWithObjects:@[guid, name] forKeys:@[@"guid", @"filename"]];
     }
     
     [json setValue:value forKey:self.name];
 }
 
 - (NSArray *)getColumns {
-    return [NSArray arrayWithObjects:[NSString stringWithFormat:@"%@_guid", self.name], [NSString stringWithFormat:@"%@_name", self.name], nil];
+    return @[[NSString stringWithFormat:@"%@_guid", self.name], [NSString stringWithFormat:@"%@_name", self.name]];
 }
 
 - (NSString *)queryForCreate {
@@ -104,7 +104,7 @@
 }
 
 - (NSArray *)supportedCTypes {
-    return [NSArray arrayWithObject:@"MobeelizerFile"];
+    return @[@"MobeelizerFile"];
 }
 
 - (NSString *)dictionaryCType {

@@ -91,9 +91,9 @@
             MobeelizerOperationError(MOBEELIZER_OPERATION_CODE_MISSING_CONNECTION, @"Login failure. Internet connection required.")
         } else {
             MobeelizerLog(@"Login with role '%@' from database successful.", self.role);
-            self.role = [roleAndInstanceGuid objectForKey:@"role"];
-            self.group = [[self.role componentsSeparatedByString:@"-"] objectAtIndex:0];
-            self.instanceGuid = [roleAndInstanceGuid objectForKey:@"instanceGuid"];
+            self.role = roleAndInstanceGuid[@"role"];
+            self.group = [self.role componentsSeparatedByString:@"-"][0];
+            self.instanceGuid = roleAndInstanceGuid[@"instanceGuid"];
             return;
         }
     }
@@ -103,9 +103,9 @@
     NSData *data;
     
     if(self.deviceToken == nil) {
-        data = [self requestPath:@"authenticate" withMethod:@"GET" withParams:[NSDictionary dictionary] returningStatusCode:&statusCode returningError:error];
+        data = [self requestPath:@"authenticate" withMethod:@"GET" withParams:@{} returningStatusCode:&statusCode returningError:error];
     } else {
-        data = [self requestPath:@"authenticate" withMethod:@"GET" withParams:[NSDictionary dictionaryWithObjectsAndKeys:self.deviceToken, @"deviceToken", @"ios", @"deviceType", nil] returningStatusCode:&statusCode returningError:error];
+        data = [self requestPath:@"authenticate" withMethod:@"GET" withParams:@{@"deviceToken": self.deviceToken, @"deviceType": @"ios"} returningStatusCode:&statusCode returningError:error];
     }
     
     if(*error != nil) {
@@ -123,9 +123,9 @@
             MobeelizerOperationError(MOBEELIZER_OPERATION_CODE_CONNECTION_FAILURE, @"Login failure. Connection failure with status %d.", statusCode);
         } else {
             MobeelizerLog(@"Login with role '%@' from database successful.", self.role);
-            self.role = [roleAndInstanceGuid objectForKey:@"role"];
-            self.group = [[self.role componentsSeparatedByString:@"-"] objectAtIndex:0];
-            self.instanceGuid = [roleAndInstanceGuid objectForKey:@"instanceGuid"];
+            self.role = roleAndInstanceGuid[@"role"];
+            self.group = [self.role componentsSeparatedByString:@"-"][0];
+            self.instanceGuid = roleAndInstanceGuid[@"instanceGuid"];
             return;
         }
     }
@@ -148,9 +148,9 @@
         MobeelizerOperationJsonError(json);
     }
     
-    self.role = [json objectForKey:@"role"];
-    self.group = [[self.role componentsSeparatedByString:@"-"] objectAtIndex:0];
-    self.instanceGuid = [json objectForKey:@"instanceGuid"];
+    self.role = json[@"role"];
+    self.group = [self.role componentsSeparatedByString:@"-"][0];
+    self.instanceGuid = json[@"instanceGuid"];
     self.initialSyncRequired = [self.mobeelizer.internalDatabase isInitialSyncRequiredForInstance:self.instance andInstanceGuid:self.instanceGuid andUser:self.user];
         
     [self.mobeelizer.internalDatabase setRole:self.role andInstanceGuid:self.instanceGuid forInstance:self.instance andUser:self.user andPassword:self.password];
@@ -163,7 +163,7 @@
     
     int statusCode;
     
-    NSData *data = [self requestPath:@"synchronizeAll" withMethod:@"POST" withParams:[NSDictionary dictionary] returningStatusCode:&statusCode returningError:error];
+    NSData *data = [self requestPath:@"synchronizeAll" withMethod:@"POST" withParams:@{} returningStatusCode:&statusCode returningError:error];
     
     if(*error != nil) {
         return nil;
@@ -220,7 +220,7 @@
         
         int statusCode;
         
-        NSData *data = [self requestPath:@"checkStatus" withMethod:@"GET" withParams:[NSDictionary dictionaryWithObject:ticket forKey:@"ticket"]  returningStatusCode:&statusCode returningError:error];
+        NSData *data = [self requestPath:@"checkStatus" withMethod:@"GET" withParams:@{@"ticket": ticket}  returningStatusCode:&statusCode returningError:error];
         
         if(*error != nil) {
             return;
@@ -242,12 +242,12 @@
             MobeelizerOperationJsonError(json);
         }
         
-        NSString *taskStatus = [json objectForKey:@"status"];
+        NSString *taskStatus = json[@"status"];
         
         MobeelizerLog(@"Check task status: %@ = %@", ticket, taskStatus);
             
         if([taskStatus isEqualToString:@"REJECTED"]) {
-            MobeelizerOperationError(MOBEELIZER_OPERATION_CODE_SYNC_REJECTED, @"Synchronization rejected with result %@ and message: %@", [json objectForKey:@"result"], [json objectForKey:@"message"]);
+            MobeelizerOperationError(MOBEELIZER_OPERATION_CODE_SYNC_REJECTED, @"Synchronization rejected with result %@ and message: %@", json[@"result"], json[@"message"]);
         } else if([taskStatus isEqualToString:@"FINISHED"]) {
             return;
         }
@@ -263,7 +263,7 @@
     
     int statusCode;
     
-    NSData *data = [self requestPath:@"data" withMethod:@"GET" withParams:[NSDictionary dictionaryWithObject:ticket forKey:@"ticket"] returningStatusCode:&statusCode returningError:error];
+    NSData *data = [self requestPath:@"data" withMethod:@"GET" withParams:@{@"ticket": ticket} returningStatusCode:&statusCode returningError:error];
     
     if(*error != nil) {
         return nil;
@@ -297,7 +297,7 @@
     
     int statusCode;
     
-    NSData *data = [self requestPath:@"confirm" withMethod:@"POST" withParams:[NSDictionary dictionaryWithObject:ticket forKey:@"ticket"] returningStatusCode:&statusCode returningError:error];
+    NSData *data = [self requestPath:@"confirm" withMethod:@"POST" withParams:@{@"ticket": ticket} returningStatusCode:&statusCode returningError:error];
     
     if(*error != nil) {
         return;
@@ -330,7 +330,7 @@
     if([Mobeelizer isLoggedIn]) {    
         int statusCode;
         
-        NSData *data = [self requestPath:@"registerPushToken" withMethod:@"POST" withParams:[NSDictionary dictionaryWithObjectsAndKeys:self.deviceToken, @"deviceToken", @"ios", @"deviceType", nil] returningStatusCode:&statusCode returningError:error];
+        NSData *data = [self requestPath:@"registerPushToken" withMethod:@"POST" withParams:@{@"deviceToken": self.deviceToken, @"deviceType": @"ios"} returningStatusCode:&statusCode returningError:error];
 
         if(*error != nil) {
             return;
@@ -369,7 +369,7 @@
     if([Mobeelizer isLoggedIn]) {    
         int statusCode;
         
-        NSData *data = [self requestPath:@"unregisterPushToken" withMethod:@"POST" withParams:[NSDictionary dictionaryWithObjectsAndKeys:self.deviceToken, @"deviceToken", @"ios", @"deviceType", nil] returningStatusCode:&statusCode returningError:error];
+        NSData *data = [self requestPath:@"unregisterPushToken" withMethod:@"POST" withParams:@{@"deviceToken": self.deviceToken, @"deviceType": @"ios"} returningStatusCode:&statusCode returningError:error];
         
         if(*error != nil) {
             return;
@@ -404,10 +404,10 @@
     int statusCode;
     
     NSMutableDictionary *params = [NSMutableDictionary dictionary];
-    [params setObject:(users == nil ? [NSNull null] : users) forKey:@"users"];
-    [params setObject:(group == nil ? [NSNull null] : group) forKey:@"group"];
-    [params setObject:(device == nil ? [NSNull null] : device) forKey:@"device"];
-    [params setObject:notification forKey:@"notification"];
+    params[@"users"] = (users == nil ? [NSNull null] : users);
+    params[@"group"] = (group == nil ? [NSNull null] : group);
+    params[@"device"] = (device == nil ? [NSNull null] : device);
+    params[@"notification"] = notification;
     
     NSError* jsonError = nil;
     
@@ -521,7 +521,7 @@
         NSMutableArray *parts = [NSMutableArray array];
         
         for (NSString *key in params.keyEnumerator) {
-            NSString *value = [params objectForKey: key];
+            NSString *value = params[key];
             [parts addObject:[NSString stringWithFormat: @"%@=%@", [key stringByAddingPercentEscapesUsingEncoding: NSUTF8StringEncoding], [value stringByAddingPercentEscapesUsingEncoding: NSUTF8StringEncoding]]];
         }
         

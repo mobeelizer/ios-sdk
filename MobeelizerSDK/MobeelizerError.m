@@ -51,11 +51,11 @@
 
 - (NSString *)message {
     return [NSString stringWithFormat:[self messageForCode], 
-            (self.arguments.count > 0) ? [self.arguments objectAtIndex:0] : nil,
-            (self.arguments.count > 1) ? [self.arguments objectAtIndex:1] : nil,
-            (self.arguments.count > 2) ? [self.arguments objectAtIndex:2] : nil,
-            (self.arguments.count > 3) ? [self.arguments objectAtIndex:3] : nil,
-            (self.arguments.count > 4) ? [self.arguments objectAtIndex:4] : nil, nil];
+            (self.arguments.count > 0) ? (self.arguments)[0] : nil,
+            (self.arguments.count > 1) ? (self.arguments)[1] : nil,
+            (self.arguments.count > 2) ? (self.arguments)[2] : nil,
+            (self.arguments.count > 3) ? (self.arguments)[3] : nil,
+            (self.arguments.count > 4) ? (self.arguments)[4] : nil, nil];
 }
 
 - (NSString *)messageForCode {

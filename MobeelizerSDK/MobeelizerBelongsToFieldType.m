@@ -48,7 +48,7 @@
 }
 
 - (NSArray *)supportedCTypes {
-    return [NSArray arrayWithObjects:@"NSString", nil];
+    return @[@"NSString"];
 }
 
 
@@ -66,7 +66,7 @@
     MobeelizerDatabase *database = [Mobeelizer database];
     
     if(![database existsByModel:[[database model:self.referencedModel] name] withGuid:value]) {
-        [errors addError:[[MobeelizerError alloc] initWithCode:MobeelizerErrorCodeNotFound andArguments:[NSArray arrayWithObject:value]] forField:self.name];
+        [errors addError:[[MobeelizerError alloc] initWithCode:MobeelizerErrorCodeNotFound andArguments:@[value]] forField:self.name];
     }    
 }
 

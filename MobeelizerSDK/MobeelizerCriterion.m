@@ -116,11 +116,11 @@
 }
 
 + (MobeelizerCriterion *)isConflicted {
-    return [[MobeelizerOperatorRestriction alloc] initWithField:@"_conflicted" andOperator:@"=" andValue:[NSNumber numberWithInt:1]];    
+    return [[MobeelizerOperatorRestriction alloc] initWithField:@"_conflicted" andOperator:@"=" andValue:@1];    
 }
 
 + (MobeelizerCriterion *)isNotConflicted {
-    return [[MobeelizerOperatorRestriction alloc] initWithField:@"_conflicted" andOperator:@"=" andValue:[NSNumber numberWithInt:0]];
+    return [[MobeelizerOperatorRestriction alloc] initWithField:@"_conflicted" andOperator:@"=" andValue:@0];
 }
 
 + (MobeelizerCriterion *)allEq:(NSDictionary *)values {

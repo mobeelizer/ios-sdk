@@ -54,14 +54,14 @@
         
         NSArray *fileComponents = [theDefinitionAsset componentsSeparatedByString:@"."];        
         
-        NSArray *pathComponents = [[fileComponents objectAtIndex:0] componentsSeparatedByString:@"/"];        
+        NSArray *pathComponents = [fileComponents[0] componentsSeparatedByString:@"/"];        
         
         NSString *path = nil;
         
         if([pathComponents count] == 1) {
-            path = [[NSBundle mainBundle] pathForResource:[pathComponents objectAtIndex:0] ofType:[fileComponents objectAtIndex:1]];
+            path = [[NSBundle mainBundle] pathForResource:pathComponents[0] ofType:fileComponents[1]];
         } else {
-            path = [[NSBundle mainBundle] pathForResource:[pathComponents objectAtIndex:([pathComponents count] - 1)] ofType:[fileComponents objectAtIndex:1] inDirectory:[[pathComponents subarrayWithRange:NSMakeRange(0, [pathComponents count] - 1)] componentsJoinedByString:@"/"]];
+            path = [[NSBundle mainBundle] pathForResource:pathComponents[([pathComponents count] - 1)] ofType:fileComponents[1] inDirectory:[[pathComponents subarrayWithRange:NSMakeRange(0, [pathComponents count] - 1)] componentsJoinedByString:@"/"]];
         }
         
         MobeelizerLog(@"Application definition: %@", path);
@@ -100,7 +100,7 @@
     NSMutableArray *array = [NSMutableArray array];
     
     for(int i = 0; i < [self.models count]; i++) {        
-        MobeelizerModelDefinition *modelForRole = [[self.models objectAtIndex:i] modelForRole:role andOwner:owner andGroup:group];
+        MobeelizerModelDefinition *modelForRole = [(self.models)[i] modelForRole:role andOwner:owner andGroup:group];
         
         if(modelForRole != nil) {
             [array addObject:modelForRole];
@@ -121,29 +121,29 @@
 
 - (void)parser:(NSXMLParser *)parser didStartElement:(NSString *)elementName namespaceURI:(NSString *)namespaceURI qualifiedName:(NSString *)qName attributes:(NSDictionary *)attributes {
     if([elementName isEqualToString:@"application"]) {
-        self.application = [attributes objectForKey:@"application"];
-        self.vendor = [attributes objectForKey:@"vendor"];
-        self.conflictMode = [attributes objectForKey:@"conflictMode"];
+        self.application = attributes[@"application"];
+        self.vendor = attributes[@"vendor"];
+        self.conflictMode = attributes[@"conflictMode"];
     } else if([elementName isEqualToString:@"device"]) {
-        [self.devices addObject:[attributes objectForKey:@"name"]];
+        [self.devices addObject:attributes[@"name"]];
     } else if([elementName isEqualToString:@"group"]) {
-        [self.groups addObject:[attributes objectForKey:@"name"]];
+        [self.groups addObject:attributes[@"name"]];
     } else if([elementName isEqualToString:@"role"]) {
-        NSString *device = [attributes objectForKey:@"device"];
-        NSString *group = [attributes objectForKey:@"group"];
-        [self.roles addObject:[NSArray arrayWithObjects:group, device, nil]];
+        NSString *device = attributes[@"device"];
+        NSString *group = attributes[@"group"];
+        [self.roles addObject:@[group, device]];
     } else if([elementName isEqualToString:@"model"]) {
         self.lastModel = [[MobeelizerModelDefinition alloc] initWithAttributes:attributes andModelPrefix:self.modelPrefix];
         [self.models addObject:self.lastModel];
     } else if([elementName isEqualToString:@"field"]) {
-        self.lastField = [[self allocFieldWithType:[attributes objectForKey:@"type"]] initWithAttributes:attributes];
+        self.lastField = [[self allocFieldWithType:attributes[@"type"]] initWithAttributes:attributes];
         [self.lastModel addField:self.lastField];
     } else if([elementName isEqualToString:@"option"]) { 
-        self.lastOptionName = [attributes objectForKey:@"name"];
+        self.lastOptionName = attributes[@"name"];
     } else if([elementName isEqualToString:@"credential"] && self.lastField != nil) { 
-        [self.lastField addCredentials:[[MobeelizerFieldCredentials alloc] initWithAttributes:attributes] forRole:[attributes objectForKey:@"role"]];
+        [self.lastField addCredentials:[[MobeelizerFieldCredentials alloc] initWithAttributes:attributes] forRole:attributes[@"role"]];
     } else if([elementName isEqualToString:@"credential"]) { 
-        [self.lastModel addCredentials:[[MobeelizerModelCredentials alloc] initWithAttributes:attributes] forRole:[attributes objectForKey:@"role"]];
+        [self.lastModel addCredentials:[[MobeelizerModelCredentials alloc] initWithAttributes:attributes] forRole:attributes[@"role"]];
     }
 }
 

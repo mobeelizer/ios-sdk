@@ -123,7 +123,7 @@
 }
 
 - (NSString *)savaFile:(NSString *)guid withData:(NSData *)data {
-    NSString *root = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) objectAtIndex:0];    
+    NSString *root = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES)[0];    
     NSString *dir = [NSString stringWithFormat:@"%@/%@/%@/", root, self.mobeelizer.instance, self.mobeelizer.user];
         
     NSError *error;

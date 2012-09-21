@@ -291,7 +291,7 @@
 		@throw [[ZipException alloc] initWithError:err reason:reason];
 	}
 	
-	NSString *name= [NSString stringWithCString:filename_inzip encoding:NSUTF8StringEncoding];
+	NSString *name= @(filename_inzip);
 	
 	ZipCompressionLevel level= ZipCompressionLevelNone;
 	if (file_info.compression_method != 0) {
@@ -341,7 +341,7 @@
 		@throw [[ZipException alloc] initWithError:err reason:reason];
 	}
 	
-	NSString *fileNameInZip= [NSString stringWithCString:filename_inzip encoding:NSUTF8StringEncoding];
+	NSString *fileNameInZip= @(filename_inzip);
 	
 	err= unzOpenCurrentFilePassword(_unzFile, NULL);
 	if (err != UNZ_OK) {
@@ -367,7 +367,7 @@
 		@throw [[ZipException alloc] initWithError:err reason:reason];
 	}
 	
-	NSString *fileNameInZip= [NSString stringWithCString:filename_inzip encoding:NSUTF8StringEncoding];
+	NSString *fileNameInZip= @(filename_inzip);
 
 	err= unzOpenCurrentFilePassword(_unzFile, [password cStringUsingEncoding:NSUTF8StringEncoding]);
 	if (err != UNZ_OK) {

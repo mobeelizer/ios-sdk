@@ -28,7 +28,7 @@
 - (void)validateField:(id)object forErrors:(MobeelizerErrors *)errors {
     
     if(self.required && [object valueForKey:self.name] == nil) {
-        [errors addError:[[MobeelizerError alloc] initWithCode:MobeelizerErrorCodeEmpty andArguments:[NSArray array]] forField:self.name];
+        [errors addError:[[MobeelizerError alloc] initWithCode:MobeelizerErrorCodeEmpty andArguments:@[]] forField:self.name];
         return;
     }
     

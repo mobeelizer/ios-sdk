@@ -28,7 +28,7 @@
 @synthesize maxLength=_maxLength;
 
 - (void)setDefaultOptions {
-    self.maxLength = [NSNumber numberWithInt:4096];
+    self.maxLength = @4096;
 }
 
 - (void)copyOptions:(id)field {
@@ -37,7 +37,7 @@
 
 - (id)addOptionWithName:(NSString *)name andValue:(NSString *)value {
     if([name isEqualToString:@"maxLength"]) {
-        self.maxLength = [NSNumber numberWithInteger:[value integerValue]];
+        self.maxLength = @([value integerValue]);
         return self.maxLength;
     }    
     return nil;
@@ -56,7 +56,7 @@
 }
 
 - (NSArray *)supportedCTypes {
-    return [NSArray arrayWithObjects:@"NSString", nil];
+    return @[@"NSString"];
 }
 
 - (NSString *)dictionaryCType {
@@ -71,7 +71,7 @@
     NSString *value = [object valueForKey:self.name];
     
     if([value length] > [self.maxLength intValue]) {
-        [errors addError:[[MobeelizerError alloc] initWithCode:MobeelizerErrorCodeTooLong andArguments:[NSArray arrayWithObject:self.maxLength]] forField:self.name];
+        [errors addError:[[MobeelizerError alloc] initWithCode:MobeelizerErrorCodeTooLong andArguments:@[self.maxLength]] forField:self.name];
     }
 }
 

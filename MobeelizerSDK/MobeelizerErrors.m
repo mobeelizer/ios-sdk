@@ -99,7 +99,7 @@
 - (NSString *)description {
     NSMutableString *string = [NSMutableString string];
     for(NSString *key in self.errorsMap.keyEnumerator) {
-        for(MobeelizerError *error in [self.errorsMap objectForKey:key]) {
+        for(MobeelizerError *error in (self.errorsMap)[key]) {
             if([key isEqualToString:@""]) {
                 [string appendFormat:@"[%@ : %@]", key, [error message]];
             } else {

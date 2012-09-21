@@ -42,7 +42,7 @@
 - (void)loginToInstance:(NSString *)instance withUser:(NSString *)user andPassword:(NSString *)password returningError:(MobeelizerOperationError **)error {
     self.instance = instance;
     self.user = user;
-    self.group = [[self.developmentRole componentsSeparatedByString:@"-"] objectAtIndex:0];
+    self.group = [self.developmentRole componentsSeparatedByString:@"-"][0];
     self.role = self.developmentRole;
     self.instanceGuid = @"00000000-0000-0000-0000-000000000000";
     self.initialSyncRequired = FALSE;

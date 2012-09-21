@@ -27,7 +27,7 @@
 }
 
 - (NSArray *)getColumns {
-    return [NSArray arrayWithObject:self.name];
+    return @[self.name];
 }
 
 - (void)addValueFromObject:(id)object toQueryParams:(NSMutableArray *)params {
@@ -109,7 +109,7 @@
 }
 
 - (NSArray *)supportedCTypes {
-    return [NSArray array];
+    return @[];
 }
 
 - (NSString *)supportedTypes {

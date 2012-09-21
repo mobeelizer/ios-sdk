@@ -49,7 +49,7 @@
     NSString *value = [json valueForKey:self.name];    
     
     if(value != nil) {
-        [object setValue:[NSNumber numberWithInt:[value intValue]] forKey:self.name];
+        [object setValue:@([value intValue]) forKey:self.name];
     }
 }
 
@@ -64,8 +64,8 @@
 }
 
 - (void)setDefaultOptions {
-    self.minValue = [NSNumber numberWithInt:-2147483648];
-    self.maxValue = [NSNumber numberWithInt:2147483647];
+    self.minValue = @-2147483648;
+    self.maxValue = @2147483647;
 }
 
 - (void)copyOptions:(id)field {
@@ -75,10 +75,10 @@
 
 - (id)addOptionWithName:(NSString *)name andValue:(NSString *)value {
     if([name isEqualToString:@"minValue"]) {
-        self.minValue = [NSNumber numberWithInteger:[value integerValue]];
+        self.minValue = @([value integerValue]);
         return self.minValue;
     } else if([name isEqualToString:@"maxValue"]) {
-        self.maxValue = [NSNumber numberWithInteger:[value integerValue]];
+        self.maxValue = @([value integerValue]);
         return self.maxValue;
     }        
     return nil;
@@ -88,7 +88,7 @@
     if(defaultValue == nil) {
         return nil;
     } else {
-        return [NSNumber numberWithInteger:[defaultValue integerValue]];
+        return @([defaultValue integerValue]);
     }
 }
 
@@ -107,9 +107,9 @@
 
 - (NSArray *)supportedCTypes {
     if(self.required) {
-        return [NSArray arrayWithObjects:@"NSNumber", PROPERTY_TYPE_INTEGER, nil];
+        return @[@"NSNumber", PROPERTY_TYPE_INTEGER];
     } else {
-        return [NSArray arrayWithObject:@"NSNumber"];
+        return @[@"NSNumber"];
     }
 }
 
@@ -129,12 +129,12 @@
     NSNumber *value = [object valueForKey:self.name];
     
     if([value intValue] < [self.minValue intValue]) {
-        [errors addError:[[MobeelizerError alloc] initWithCode:MobeelizerErrorCodeGreaterThanOrEqualsTo andArguments:[NSArray arrayWithObject:self.minValue]] forField:self.name];
+        [errors addError:[[MobeelizerError alloc] initWithCode:MobeelizerErrorCodeGreaterThanOrEqualsTo andArguments:@[self.minValue]] forField:self.name];
         return;
     }
     
     if([value intValue] > [self.maxValue intValue]) {
-        [errors addError:[[MobeelizerError alloc] initWithCode:MobeelizerErrorCodeLessThanOrEqualsTo andArguments:[NSArray arrayWithObject:self.maxValue]] forField:self.name];
+        [errors addError:[[MobeelizerError alloc] initWithCode:MobeelizerErrorCodeLessThanOrEqualsTo andArguments:@[self.maxValue]] forField:self.name];
         return;
     }
 }

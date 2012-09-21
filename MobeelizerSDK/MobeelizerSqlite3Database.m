@@ -91,7 +91,7 @@
         int columnsCount = sqlite3_column_count(statement);
         
         for(int position = 0; position < columnsCount; position++) {
-            NSString *name = [NSString stringWithUTF8String:(char *) sqlite3_column_name(statement, position)];        
+            NSString *name = @((char *) sqlite3_column_name(statement, position));        
             [row setValue:[self getColumnFromStatement:statement onPosition:position] forKey:name];
         }
         
@@ -133,7 +133,7 @@
             int columnsCount = sqlite3_column_count(statement);
             
             for(int position = 0; position < columnsCount; position++) {
-                NSString *name = [NSString stringWithUTF8String:(char *) sqlite3_column_name(statement, position)];        
+                NSString *name = @((char *) sqlite3_column_name(statement, position));        
                 [row setValue:[self getColumnFromStatement:statement onPosition:position] forKey:name];
             }
             
@@ -182,13 +182,13 @@
     int type = sqlite3_column_type(statement, position);
     
     if(type == SQLITE_INTEGER) {
-        return [NSNumber numberWithInt:sqlite3_column_int(statement, position)];
+        return @(sqlite3_column_int(statement, position));
     } else if(type == SQLITE_FLOAT) {
         return [NSDecimalNumber numberWithDouble:sqlite3_column_double(statement, position)];
     } else if(type == SQLITE_NULL) {
         return nil;
     } else if(type == SQLITE_TEXT || type == SQLITE3_TEXT) {
-        return [NSString stringWithUTF8String:(char *)sqlite3_column_text(statement, position)];
+        return @((char *)sqlite3_column_text(statement, position));
     } else {
         MobeelizerException(@"Error while getting column", @"Error while getting column: %d", type);
         return nil;
@@ -256,7 +256,7 @@
 
 - (NSString *)dataFilePathForName:(NSString *)name {
     NSArray *paths = NSSearchPathForDirectoriesInDomains( NSDocumentDirectory, NSUserDomainMask, YES);
-    NSString *documentsDirectory = [paths objectAtIndex:0];
+    NSString *documentsDirectory = paths[0];
     return [[documentsDirectory stringByAppendingPathComponent:name] stringByAppendingPathExtension:@"sqlite3"];
 }
 

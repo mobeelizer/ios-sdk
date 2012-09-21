@@ -61,7 +61,7 @@
     NSMutableArray *digests = [NSMutableArray array];
     
     for(NSArray *role in self.roles) {
-        [digests addObject:[NSString stringWithFormat:@"{%@$%@}", [role objectAtIndex:0], [role objectAtIndex:1]]];
+        [digests addObject:[NSString stringWithFormat:@"{%@$%@}", role[0], role[1]]];
     }
     
     return digests;

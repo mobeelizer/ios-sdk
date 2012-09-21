@@ -37,7 +37,7 @@
     NSNumber *value = [row valueForKey:self.name];
     
     if(value != nil) {
-        [object setValue:[NSNumber numberWithBool:([value intValue] == 1)] forKey:self.name];
+        [object setValue:@((BOOL)([value intValue] == 1)) forKey:self.name];
     }
 }
 
@@ -45,7 +45,7 @@
     NSString *value = [json valueForKey:self.name];    
     
     if(value != nil) {
-        [object setValue:[NSNumber numberWithBool:[value isEqualToString:@"true"]] forKey:self.name];
+        [object setValue:@([value isEqualToString:@"true"]) forKey:self.name];
     }
 }
 
@@ -63,9 +63,9 @@
     if(defaultValue == nil) {
         return nil;
     } else if([defaultValue isEqualToString:@"true"]) {
-        return [NSNumber numberWithBool:TRUE];
+        return @TRUE;
     } else {
-        return [NSNumber numberWithBool:FALSE];
+        return @FALSE;
     }
 }
 
@@ -85,9 +85,9 @@
 
 - (NSArray *)supportedCTypes {
     if(self.required) {
-        return [NSArray arrayWithObjects:@"NSNumber", PROPERTY_TYPE_BOOL, nil];    
+        return @[@"NSNumber", PROPERTY_TYPE_BOOL];    
     } else {
-        return [NSArray arrayWithObject:@"NSNumber"];
+        return @[@"NSNumber"];
     }
 }
 

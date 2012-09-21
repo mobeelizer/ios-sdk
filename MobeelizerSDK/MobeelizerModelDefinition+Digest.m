@@ -34,7 +34,7 @@
     NSMutableArray *credentialsDigests = [NSMutableArray array];
     NSDictionary *credentials = self.credentials;    
     for(NSString *credentialsRole in [credentials keyEnumerator]) {
-        MobeelizerModelCredentials *credential = [credentials objectForKey:credentialsRole];
+        MobeelizerModelCredentials *credential = credentials[credentialsRole];
         [credentialsDigests addObject:[self calculateCredentialsDigest:credentialsRole readAllowed:credential.readAllowed createAllowed:credential.createAllowed updateAllowed:credential.updateAllowed deleteAllowed:credential.deleteAllowed resolveConflictAllowed:credential.resolveConflictAllowed]];
     }
     [MobeelizerDefinitionManager addSortedDigests:credentialsDigests toDigest:digest];

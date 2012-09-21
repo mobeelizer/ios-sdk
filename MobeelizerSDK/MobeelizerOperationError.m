@@ -29,7 +29,7 @@
     if (self = [super init]) {
         _code = code;
         _message = message;
-        _arguments = [NSArray array];
+        _arguments = @[];
     }
     
     return self;
@@ -37,11 +37,11 @@
 
 - (id)initWithJson:(NSDictionary *)json {
     if (self = [super init]) {
-        _code = [json objectForKey:@"code"];
-        _message = [json objectForKey:@"message"];
-        _arguments = [json objectForKey:@"arguments"];
+        _code = json[@"code"];
+        _message = json[@"message"];
+        _arguments = json[@"arguments"];
         if(_arguments == nil) {
-            _arguments = [NSArray array];
+            _arguments = @[];
         }
     }
     
@@ -52,7 +52,7 @@
     if (self = [super init]) {
         _code = MOBEELIZER_OPERATION_CODE_OTHER;
         _message = [exception description];
-        _arguments = [NSArray array];
+        _arguments = @[];
     }
     
     return self;
@@ -62,7 +62,7 @@
     if (self = [super init]) {
         _code = MOBEELIZER_OPERATION_CODE_OTHER;
         _message = [error localizedDescription];
-        _arguments = [NSArray array];
+        _arguments = @[];
     }
     
     return self;

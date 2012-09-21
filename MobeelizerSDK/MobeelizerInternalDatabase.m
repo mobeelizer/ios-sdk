@@ -74,12 +74,12 @@
 }
 
 - (void)setInitializationFinishedForInstance:(NSString *)instance andInstanceGuid:(NSString *)instanceGuid andUser:(NSString *)user {    
-    [self.database execQuery:SQL_DELETE_VERSIONS withParams:[NSArray arrayWithObjects:instance, user, nil]];    
-    [self.database execQuery:SQL_INSERT_VERSIONS withParams:[NSArray arrayWithObjects: instance, instanceGuid, user, self.versionDigest, nil]];
+    [self.database execQuery:SQL_DELETE_VERSIONS withParams:@[instance, user]];    
+    [self.database execQuery:SQL_INSERT_VERSIONS withParams:@[instance, instanceGuid, user, self.versionDigest]];
 }
 
 - (BOOL)checkIfInitializationIsRequiredForInstance:(NSString *)instance andInstanceGuid:(NSString *)instanceGuid andUser:(NSString *)user {    
-    NSString *currentVersionDigest = [self.database execQueryForSingleResult:SQL_SELECT_VERSIONS withParams:[NSArray arrayWithObjects: instance, instanceGuid, user, nil]];    
+    NSString *currentVersionDigest = [self.database execQueryForSingleResult:SQL_SELECT_VERSIONS withParams:@[instance, instanceGuid, user]];    
         
     if(currentVersionDigest != nil && [currentVersionDigest isEqualToString:self.versionDigest]) {
         return FALSE;
@@ -89,41 +89,41 @@
 }
 
 - (BOOL)isInitialSyncRequiredForInstance:(NSString *)instance andInstanceGuid:(NSString *)instanceGuid andUser:(NSString *)user {
-    NSNumber *count = [self.database execQueryForSingleResult:SQL_COUNT_ROLES withParams:[NSArray arrayWithObjects: instance, user, nil]];
+    NSNumber *count = [self.database execQueryForSingleResult:SQL_COUNT_ROLES withParams:@[instance, user]];
     
     if([count intValue] > 0) {
-        NSDictionary *result = [self.database execQueryForRow:SQL_SELECT_INITIAL_SYNC_REQUIRED withParams:[NSArray arrayWithObjects: instance, user, nil]];
+        NSDictionary *result = [self.database execQueryForRow:SQL_SELECT_INITIAL_SYNC_REQUIRED withParams:@[instance, user]];
         
-        if(![instanceGuid isEqualToString:[result objectForKey:@"instanceGuid"]]) { 
+        if(![instanceGuid isEqualToString:result[@"instanceGuid"]]) { 
             return TRUE;
         }
         
-        return [[result objectForKey:@"initialSyncRequired"] intValue] == 1;
+        return [result[@"initialSyncRequired"] intValue] == 1;
     } else {
         return TRUE;
     }
 }
 
 - (void)setInitialSyncAsNotRequiredForInstance:(NSString *)instance andUser:(NSString *)user {
-    [self.database execQuery:SQL_UPDATE_INITIAL_SYNC_REQUIRED withParams:[NSArray arrayWithObjects: instance, user, nil]];
+    [self.database execQuery:SQL_UPDATE_INITIAL_SYNC_REQUIRED withParams:@[instance, user]];
 }
 
 - (void)setRole:(NSString *)role andInstanceGuid:(NSString *)instanceGuid forInstance:(NSString *)instance andUser:(NSString *)user andPassword:(NSString *)password {
-    NSNumber *count = [self.database execQueryForSingleResult:SQL_COUNT_ROLES withParams:[NSArray arrayWithObjects: instance, user, nil]];
+    NSNumber *count = [self.database execQueryForSingleResult:SQL_COUNT_ROLES withParams:@[instance, user]];
         
     if([count intValue] > 0) {
-        [self.database execQuery:SQL_UPDATE_ROLES withParams:[NSArray arrayWithObjects: role, instanceGuid, [MobeelizerDigestUtil stringFromSHA256:password], instance, user, nil]];
+        [self.database execQuery:SQL_UPDATE_ROLES withParams:@[role, instanceGuid, [MobeelizerDigestUtil stringFromSHA256:password], instance, user]];
     } else {
-        [self.database execQuery:SQL_INSERT_ROLES withParams:[NSArray arrayWithObjects: role, instanceGuid, instance, user, [MobeelizerDigestUtil stringFromSHA256:password], nil]];
+        [self.database execQuery:SQL_INSERT_ROLES withParams:@[role, instanceGuid, instance, user, [MobeelizerDigestUtil stringFromSHA256:password]]];
     }
 }
 
 - (NSDictionary *)getRoleAndInstanceGuidForInstance:(NSString *)instance andUser:(NSString *)user andPassword:(NSString *)password {
-    return [self.database execQueryForRow:SQL_SELECT_ROLE withParams:[NSArray arrayWithObjects: instance, user, [MobeelizerDigestUtil stringFromSHA256:password], nil]];    
+    return [self.database execQueryForRow:SQL_SELECT_ROLE withParams:@[instance, user, [MobeelizerDigestUtil stringFromSHA256:password]]];    
 }
 
 - (void)clearRoleAndInstanceGuidForInstance:(NSString *)instance andUser:(NSString *)user { 
-    [self.database execQuery:SQL_CLEAR_ROLES withParams:[NSArray arrayWithObjects: instance, user, nil]];
+    [self.database execQuery:SQL_CLEAR_ROLES withParams:@[instance, user]];
 }
 
 @end

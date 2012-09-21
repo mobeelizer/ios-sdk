@@ -25,8 +25,8 @@
 @implementation MobeelizerFieldDefinition (Definition)
 
 - (id)initWithAttributes:(NSDictionary *)attributes {        
-    BOOL required = [attributes objectForKey:@"required"] != nil && [[attributes objectForKey:@"required"] isEqualToString:@"true"];        
-    return [self initWithName:[attributes objectForKey:@"name"] andType:[attributes objectForKey:@"type"] andRequired:required andDefaultValue:[attributes objectForKey:@"defaultValue"]];
+    BOOL required = attributes[@"required"] != nil && [attributes[@"required"] isEqualToString:@"true"];        
+    return [self initWithName:attributes[@"name"] andType:attributes[@"type"] andRequired:required andDefaultValue:attributes[@"defaultValue"]];
 }
 
 - (void)addCredentials:(MobeelizerFieldCredentials *)credentials forRole:(NSString *)role {
@@ -38,7 +38,7 @@
 }
 
 - (MobeelizerFieldDefinition *)fieldForRole:(NSString *)role {
-    MobeelizerFieldCredentials *credentialForRole = [self.credentials objectForKey:role];
+    MobeelizerFieldCredentials *credentialForRole = (self.credentials)[role];
     
     if(credentialForRole == nil || ![credentialForRole hasAccess]) {
         return nil;

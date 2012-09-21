@@ -186,7 +186,6 @@
 		C88EBA23150A0D0800E26149 /* MobeelizerOperatorRestriction.m in Sources */ = {isa = PBXBuildFile; fileRef = C88EBA21150A0D0600E26149 /* MobeelizerOperatorRestriction.m */; };
 		C8956D811507A5A9004DC15C /* MobeelizerPropertyUtil.h in Headers */ = {isa = PBXBuildFile; fileRef = C8956D7F1507A5A7004DC15C /* MobeelizerPropertyUtil.h */; };
 		C8956D821507A5A9004DC15C /* MobeelizerPropertyUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = C8956D801507A5A8004DC15C /* MobeelizerPropertyUtil.m */; };
-		C8F28FE015C910A500D14D75 /* CHANGELOG.md in Resources */ = {isa = PBXBuildFile; fileRef = C8F28FDF15C910A500D14D75 /* CHANGELOG.md */; };
 		C8F8B64E15667BDF00D38924 /* Mobeelizer+Dictionary.h in Headers */ = {isa = PBXBuildFile; fileRef = C8F8B64B1566794B00D38924 /* Mobeelizer+Dictionary.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C8F8B64F15667BF000D38924 /* MobeelizerDatabase+Dictionary.h in Headers */ = {isa = PBXBuildFile; fileRef = C8F8B64D156679CA00D38924 /* MobeelizerDatabase+Dictionary.h */; settings = {ATTRIBUTES = (Public, ); }; };
 /* End PBXBuildFile section */
@@ -855,7 +854,7 @@
 		C83D24C914FB82E500F015BB /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0430;
+				LastUpgradeCheck = 0440;
 			};
 			buildConfigurationList = C83D24CC14FB82E500F015BB /* Build configuration list for PBXProject "MobeelizerSDK" */;
 			compatibilityVersion = "Xcode 3.2";
@@ -881,7 +880,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				C82A4C40150101F900D7B591 /* InfoPlist.strings in Resources */,
-				C8F28FE015C910A500D14D75 /* CHANGELOG.md in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1066,6 +1064,7 @@
 		C82A4AB914FE711F00D7B591 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				GCC_THUMB_SUPPORT = NO;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;
@@ -1073,6 +1072,7 @@
 		C82A4ABA14FE711F00D7B591 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				GCC_THUMB_SUPPORT = NO;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;
@@ -1088,6 +1088,7 @@
 				EXECUTABLE_SUFFIX = "";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "MobeelizerSDK/MobeelizerSDK-Prefix.pch";
+				GCC_THUMB_SUPPORT = NO;
 				INFOPLIST_FILE = "MobeelizerSDK/MobeelizerSDK-Info.plist";
 				INFOPLIST_PATH = "$(UNLOCALIZED_RESOURCES_FOLDER_PATH)/Info.plist";
 				INSTALL_PATH = "$(BUILT_PRODUCTS_DIR)";
@@ -1112,6 +1113,7 @@
 				EXECUTABLE_SUFFIX = "";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "MobeelizerSDK/MobeelizerSDK-Prefix.pch";
+				GCC_THUMB_SUPPORT = NO;
 				INFOPLIST_FILE = "MobeelizerSDK/MobeelizerSDK-Info.plist";
 				INFOPLIST_PATH = "$(UNLOCALIZED_RESOURCES_FOLDER_PATH)/Info.plist";
 				INSTALL_PATH = "$(BUILT_PRODUCTS_DIR)";
@@ -1130,10 +1132,7 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				AMAZON_BUCKET = "https://s3.amazonaws.com/sdk.mobeelizer.com";
-				ARCHS = (
-					"$(ARCHS_STANDARD_32_BIT)",
-					armv6,
-				);
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
 				CLANG_ENABLE_OBJC_ARC = YES;
 				COPY_PHASE_STRIP = NO;
 				FRAMEWORK_VERSION = 1.4.0;
@@ -1146,6 +1145,7 @@
 					"SDK_VERSION=@\\\"${FRAMEWORK_VERSION}\\\"",
 				);
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_THUMB_SUPPORT = NO;
 				GCC_VERSION = "";
 				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
@@ -1155,7 +1155,8 @@
 				PUBLIC_HEADERS_FOLDER_PATH = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
-				VALID_ARCHS = "armv7 armv6";
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALID_ARCHS = armv7;
 				WRAPPER_EXTENSION = framework;
 			};
 			name = Debug;
@@ -1165,15 +1166,13 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				AMAZON_BUCKET = "https://s3.amazonaws.com/sdk.mobeelizer.com";
-				ARCHS = (
-					"$(ARCHS_STANDARD_32_BIT)",
-					armv6,
-				);
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
 				CLANG_ENABLE_OBJC_ARC = YES;
 				COPY_PHASE_STRIP = YES;
 				FRAMEWORK_VERSION = 1.4.0;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_PREPROCESSOR_DEFINITIONS = "SDK_VERSION=@\\\"${FRAMEWORK_VERSION}\\\"";
+				GCC_THUMB_SUPPORT = NO;
 				GCC_VERSION = "";
 				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
@@ -1183,8 +1182,9 @@
 				PUBLIC_HEADERS_FOLDER_PATH = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
-				VALID_ARCHS = "armv7 armv6";
+				VALID_ARCHS = armv7;
 				WRAPPER_EXTENSION = framework;
 			};
 			name = Release;

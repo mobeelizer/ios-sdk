@@ -31,7 +31,7 @@
 @implementation MobeelizerPropertyUtil
 
 + (NSString *)propertyType:(objc_property_t)property {         
-    NSString *attributesString = [NSString stringWithUTF8String:property_getAttributes(property)];
+    NSString *attributesString = @(property_getAttributes(property));
     NSArray *attributes = [attributesString componentsSeparatedByString:@","];
     
     if([attributes containsObject:@"R"]) {
@@ -44,13 +44,13 @@
         return nil;
     }
     
-    if([[attributes objectAtIndex:0] hasPrefix:@"T@\""]) {
-        return [[attributes objectAtIndex:0] substringWithRange:NSMakeRange(3, [[attributes objectAtIndex:0] length] - 4)];
-    } else if([[attributes objectAtIndex:0] isEqualToString:@"T@"]) {
+    if([attributes[0] hasPrefix:@"T@\""]) {
+        return [attributes[0] substringWithRange:NSMakeRange(3, [attributes[0] length] - 4)];
+    } else if([attributes[0] isEqualToString:@"T@"]) {
         return @"id";
-    } else if([[attributes objectAtIndex:0] length] == 2) {
-        return [[attributes objectAtIndex:0] substringFromIndex:1];
-    } else if([[attributes objectAtIndex:0] isEqualToString:@"T{?=b8b4b1b1b18[8S]}"]) {
+    } else if([attributes[0] length] == 2) {
+        return [attributes[0] substringFromIndex:1];
+    } else if([attributes[0] isEqualToString:@"T{?=b8b4b1b1b18[8S]}"]) {
         return @"NSDecimal";        
     }
     
@@ -71,11 +71,11 @@
             objc_property_t property = properties[i];
             const char *propName = property_getName(property);
             if(propName) {
-                NSString *propertyName = [NSString stringWithUTF8String:propName];
+                NSString *propertyName = @(propName);
                 NSString *propertyType = [self propertyType:property];
                 
                 if(propertyType != nil) {            
-                    [dictionary setObject:propertyType forKey:propertyName];                
+                    dictionary[propertyName] = propertyType;                
                 }
             }
         }

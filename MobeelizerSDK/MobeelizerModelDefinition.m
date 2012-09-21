@@ -78,27 +78,27 @@
             _hasConflicted = [[properties allKeys] containsObject:@"conflicted"];
             _hasDeleted = [[properties allKeys] containsObject:@"deleted"];        
             
-            if(![[properties objectForKey:@"guid"] isEqualToString:@"NSString"]) {
+            if(![properties[@"guid"] isEqualToString:@"NSString"]) {
                 MobeelizerException(@"Missing property", @"Missing property guid with type NSString");
             }
             
-            if(self.hasOwner && ![[properties objectForKey:@"owner"] isEqualToString:@"NSString"]) {
+            if(self.hasOwner && ![properties[@"owner"] isEqualToString:@"NSString"]) {
                 MobeelizerException(@"Invalid property", @"Invalid property owner - wrong type, should be NSString");
             }
             
-            if(self.hasGroup && ![[properties objectForKey:@"group"] isEqualToString:@"NSString"]) {
+            if(self.hasGroup && ![properties[@"group"] isEqualToString:@"NSString"]) {
                 MobeelizerException(@"Invalid property", @"Invalid property group - wrong type, should be NSString");
             }
             
-            if(self.hasModified && ![[properties objectForKey:@"modified"] isEqualToString:@"c"]) {
+            if(self.hasModified && ![properties[@"modified"] isEqualToString:@"c"]) {
                 MobeelizerException(@"Invalid property", @"Invalid property modified - wrong type, should be BOOL");
             }
             
-            if(self.hasDeleted && ![[properties objectForKey:@"deleted"] isEqualToString:@"c"]) {
+            if(self.hasDeleted && ![properties[@"deleted"] isEqualToString:@"c"]) {
                 MobeelizerException(@"Invalid property", @"Invalid property deleted - wrong type, should be BOOL");
             }
             
-            if(self.hasConflicted && ![[properties objectForKey:@"conflicted"] isEqualToString:@"c"]) {
+            if(self.hasConflicted && ![properties[@"conflicted"] isEqualToString:@"c"]) {
                 MobeelizerException(@"Invalid property", @"Invalid property conflicted - wrong type, should be BOOL");
             }
             

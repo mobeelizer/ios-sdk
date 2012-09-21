@@ -30,7 +30,7 @@
     if(value == nil) {
         [params addObject:[NSNull null]];
     } else if ([self.cType isEqualToString:@"NSDate"]) {
-        [params addObject:[NSNumber numberWithInt:[value timeIntervalSince1970]]];
+        [params addObject:@([value timeIntervalSince1970])];
     } else {
         [params addObject:value];
     }    
@@ -55,7 +55,7 @@
         if ([self.cType isEqualToString:@"NSDate"]) {
             [object setValue:[NSDate dateWithTimeIntervalSince1970:[value intValue]] forKey:self.name];
         } else {
-            [object setValue:[NSNumber numberWithInt:[value intValue]] forKey:self.name];
+            [object setValue:@([value intValue]) forKey:self.name];
         }
     }
 }
@@ -92,9 +92,9 @@
 
 - (NSArray *)supportedCTypes {  
     if(self.required) {
-        return [NSArray arrayWithObjects:@"NSDate", @"NSNumber", PROPERTY_TYPE_INTEGER, nil];
+        return @[@"NSDate", @"NSNumber", PROPERTY_TYPE_INTEGER];
     } else {
-        return [NSArray arrayWithObjects:@"NSDate", @"NSNumber", nil];
+        return @[@"NSDate", @"NSNumber"];
     }
 }
 

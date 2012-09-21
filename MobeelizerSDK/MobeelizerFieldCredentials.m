@@ -27,9 +27,9 @@
 
 - (id)initWithAttributes:(NSDictionary *)theAttributes {
     if(self = [super init]) {
-        _readAllowed = [MobeelizerCredentialsUtil convertToCredentials:[theAttributes objectForKey:@"readAllowed"]];
-        _createAllowed = [MobeelizerCredentialsUtil convertToCredentials:[theAttributes objectForKey:@"createAllowed"]];
-        _updateAllowed = [MobeelizerCredentialsUtil convertToCredentials:[theAttributes objectForKey:@"updateAllowed"]];
+        _readAllowed = [MobeelizerCredentialsUtil convertToCredentials:theAttributes[@"readAllowed"]];
+        _createAllowed = [MobeelizerCredentialsUtil convertToCredentials:theAttributes[@"createAllowed"]];
+        _updateAllowed = [MobeelizerCredentialsUtil convertToCredentials:theAttributes[@"updateAllowed"]];
     }
     return self;
 }

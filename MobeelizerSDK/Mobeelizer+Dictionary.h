@@ -28,6 +28,8 @@
 
 /**
  * Initializer Mobeelizer with given configuration.
+ *
+ * @param configuration The configuration.
  */
 + (void)createWithConfiguration:(NSDictionary *)configuration;
 

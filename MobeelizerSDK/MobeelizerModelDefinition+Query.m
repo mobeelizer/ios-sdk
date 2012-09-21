@@ -137,23 +137,23 @@
     }
     
     if(self.hasModified) {    
-        [object setValue:[NSNumber numberWithBool:modified] forKey:@"modified"];
+        [object setValue:@(modified) forKey:@"modified"];
     }
     
     if(self.hasDeleted) {
-        [object setValue:[NSNumber numberWithBool:deleted] forKey:@"deleted"];
+        [object setValue:@(deleted) forKey:@"deleted"];
     }
     
     if(self.hasConflicted) {
-        [object setValue:[NSNumber numberWithBool:conflicted] forKey:@"conflicted"];
+        [object setValue:@(conflicted) forKey:@"conflicted"];
     }
 
     [array addObject:guid];    
     [array addObject:owner]; 
     [array addObject:group]; 
-    [array addObject:[NSNumber numberWithBool:modified]];
-    [array addObject:[NSNumber numberWithBool:deleted]];
-    [array addObject:[NSNumber numberWithBool:conflicted]];
+    [array addObject:@(modified)];
+    [array addObject:@(deleted)];
+    [array addObject:@(conflicted)];
 
     for(MobeelizerFieldDefinition *field in self.fields) {
         [field addValueFromObject:object toQueryParams:array];
@@ -166,20 +166,20 @@
     NSMutableArray *array = [NSMutableArray array];
     
     if(self.hasModified) {    
-        [object setValue:[NSNumber numberWithBool:modified] forKey:@"modified"];
+        [object setValue:@(modified) forKey:@"modified"];
     }
     
     if(self.hasDeleted) {
-        [object setValue:[NSNumber numberWithBool:deleted] forKey:@"deleted"];
+        [object setValue:@(deleted) forKey:@"deleted"];
     }
     
     if(self.hasConflicted) {
-        [object setValue:[NSNumber numberWithBool:conflicted] forKey:@"conflicted"];
+        [object setValue:@(conflicted) forKey:@"conflicted"];
     }
     
-    [array addObject:[NSNumber numberWithBool:modified]];
-    [array addObject:[NSNumber numberWithBool:deleted]];
-    [array addObject:[NSNumber numberWithBool:conflicted]];
+    [array addObject:@(modified)];
+    [array addObject:@(deleted)];
+    [array addObject:@(conflicted)];
     
     for(MobeelizerFieldDefinition *field in self.fields) {
         [field addValueFromObject:object toQueryParams:array];
@@ -193,20 +193,20 @@
     NSMutableArray *array = [NSMutableArray array];
     
     if(self.hasModified) {    
-        [object setValue:[NSNumber numberWithBool:modified] forKey:@"modified"];
+        [object setValue:@(modified) forKey:@"modified"];
     }
     
     if(self.hasDeleted) {
-        [object setValue:[NSNumber numberWithBool:deleted] forKey:@"deleted"];
+        [object setValue:@(deleted) forKey:@"deleted"];
     }
     
     if(self.hasConflicted) {
-        [object setValue:[NSNumber numberWithBool:conflicted] forKey:@"conflicted"];
+        [object setValue:@(conflicted) forKey:@"conflicted"];
     }
     
-    [array addObject:[NSNumber numberWithBool:modified]];
-    [array addObject:[NSNumber numberWithBool:deleted]];
-    [array addObject:[NSNumber numberWithBool:conflicted]];
+    [array addObject:@(modified)];
+    [array addObject:@(deleted)];
+    [array addObject:@(conflicted)];
         
     [array addObject:[object valueForKey:@"guid"]];
     return array;    
@@ -216,7 +216,7 @@
     NSMutableArray *array = [NSMutableArray array];
     
     if(self.hasModified) {    
-        [object setValue:[NSNumber numberWithBool:TRUE] forKey:@"modified"];
+        [object setValue:@TRUE forKey:@"modified"];
     }
     
     for(MobeelizerFieldDefinition *field in self.fields) {
@@ -245,15 +245,15 @@
     }
     
     if(self.hasDeleted) {
-        [object setValue:[NSNumber numberWithBool:[[[json valueForKey:@"fields"] valueForKey:@"s_deleted"] isEqualToString:@"true"]] forKey:@"deleted"];
+        [object setValue:@([[[json valueForKey:@"fields"] valueForKey:@"s_deleted"] isEqualToString:@"true"]) forKey:@"deleted"];
     }
     
     if(self.hasModified) {
-        [object setValue:[NSNumber numberWithBool:FALSE] forKey:@"modified"];
+        [object setValue:@FALSE forKey:@"modified"];
     }
     
     if(self.hasConflicted) {
-        [object setValue:[NSNumber numberWithBool:[[json valueForKey:@"conflictState"] hasPrefix:@"IN_CONFLICT"]] forKey:@"conflicted"];
+        [object setValue:@([[json valueForKey:@"conflictState"] hasPrefix:@"IN_CONFLICT"]) forKey:@"conflicted"];
     }
     
     for(MobeelizerFieldDefinition *field in self.fields) {
@@ -337,7 +337,7 @@
 
 - (void) setAsDeleted:(id)object {
     if(self.hasDeleted) {
-        [object setValue:[NSNumber numberWithBool:TRUE] forKey:@"deleted"];
+        [object setValue:@TRUE forKey:@"deleted"];
     }    
 }
 
@@ -348,14 +348,14 @@
 
     if(self.credential.deleteAllowed == MobeelizerCredentialNone) {
         MobeelizerErrors *error = [[MobeelizerErrors alloc] init];
-        [error addGlobalError:[[MobeelizerError alloc] initWithCode:NoCredentialsToPerformOperationOnModel andArguments:[NSArray arrayWithObject:@"delete"]]];
+        [error addGlobalError:[[MobeelizerError alloc] initWithCode:NoCredentialsToPerformOperationOnModel andArguments:@[@"delete"]]];
         return error;
     }
     
     for (NSDictionary *ownerAndGroup in ownersAndGroups) {
-        if(![self checkCredential:self.credential.deleteAllowed forOwner:[ownerAndGroup objectForKey:@"_owner"] andGroup:[ownerAndGroup objectForKey:@"_group"]]) {
+        if(![self checkCredential:self.credential.deleteAllowed forOwner:ownerAndGroup[@"_owner"] andGroup:ownerAndGroup[@"_group"]]) {
             MobeelizerErrors *error = [[MobeelizerErrors alloc] init];
-            [error addGlobalError:[[MobeelizerError alloc] initWithCode:NoCredentialsToPerformOperationOnModel andArguments:[NSArray arrayWithObject:@"delete"]]];
+            [error addGlobalError:[[MobeelizerError alloc] initWithCode:NoCredentialsToPerformOperationOnModel andArguments:@[@"delete"]]];
             return error;
         }
     }
@@ -364,9 +364,9 @@
 }
 
 - (MobeelizerErrors*) checkPermissionForDeleteWithOwnerAndGroup:(NSDictionary*)ownerAndGroup {
-    if(![self checkCredential:self.credential.deleteAllowed forOwner:[ownerAndGroup objectForKey:@"_owner"] andGroup:[ownerAndGroup objectForKey:@"_group"]]) {
+    if(![self checkCredential:self.credential.deleteAllowed forOwner:ownerAndGroup[@"_owner"] andGroup:ownerAndGroup[@"_group"]]) {
         MobeelizerErrors *error = [[MobeelizerErrors alloc] init];
-        [error addGlobalError:[[MobeelizerError alloc] initWithCode:NoCredentialsToPerformOperationOnModel andArguments:[NSArray arrayWithObject:@"delete"]]];
+        [error addGlobalError:[[MobeelizerError alloc] initWithCode:NoCredentialsToPerformOperationOnModel andArguments:@[@"delete"]]];
         return error;
     }
     return nil;
@@ -375,7 +375,7 @@
 - (MobeelizerErrors*) checkPermissionForInsert:(id)object {
     if(![self checkCredential:self.credential.createAllowed forOwner:self.owner andGroup:self.group]) {
         MobeelizerErrors *error = [[MobeelizerErrors alloc] init];
-        [error addGlobalError:[[MobeelizerError alloc] initWithCode:NoCredentialsToPerformOperationOnModel andArguments:[NSArray arrayWithObject:@"create"]]];
+        [error addGlobalError:[[MobeelizerError alloc] initWithCode:NoCredentialsToPerformOperationOnModel andArguments:@[@"create"]]];
         return error;
     }
     for(MobeelizerFieldDefinition *field in self.fields) {
@@ -386,7 +386,7 @@
         }
            
         MobeelizerErrors *error = [[MobeelizerErrors alloc] init];
-        [error addGlobalError:[[MobeelizerError alloc] initWithCode:NoCredentialsToPerformOperationOnField andArguments:[NSArray arrayWithObjects:@"create", field.name, nil]]];
+        [error addGlobalError:[[MobeelizerError alloc] initWithCode:NoCredentialsToPerformOperationOnField andArguments:@[@"create", field.name]]];
         return error;
     }
     
@@ -394,21 +394,21 @@
 }
 
 - (MobeelizerErrors*) checkPermissionForUpdate:(id)object withOriginalObject:(id)originalObject withOriginalOwnerAndGroup:(NSDictionary*)originalOwnerAndGroup {
-    if(![self checkCredential:self.credential.updateAllowed forOwner:[originalOwnerAndGroup objectForKey:@"_owner"] andGroup:[originalOwnerAndGroup objectForKey:@"_group"]]) {
+    if(![self checkCredential:self.credential.updateAllowed forOwner:originalOwnerAndGroup[@"_owner"] andGroup:originalOwnerAndGroup[@"_group"]]) {
         MobeelizerErrors *error = [[MobeelizerErrors alloc] init];
-        [error addGlobalError:[[MobeelizerError alloc] initWithCode:NoCredentialsToPerformOperationOnModel andArguments:[NSArray arrayWithObject:@"update"]]];
+        [error addGlobalError:[[MobeelizerError alloc] initWithCode:NoCredentialsToPerformOperationOnModel andArguments:@[@"update"]]];
         return error;
     }
     for(MobeelizerFieldDefinition *field in self.fields) {
         id value = [object valueForKey:field.name];
         id originalValue = [originalObject valueForKey:field.name];
                 
-        if([self checkCredential:field.credential.updateAllowed forOwner:[originalOwnerAndGroup objectForKey:@"_owner"] andGroup:[originalOwnerAndGroup objectForKey:@"_group"]] || value == originalValue || [[value stringValue] isEqualToString:[originalValue stringValue]]) {
+        if([self checkCredential:field.credential.updateAllowed forOwner:originalOwnerAndGroup[@"_owner"] andGroup:originalOwnerAndGroup[@"_group"]] || value == originalValue || [[value stringValue] isEqualToString:[originalValue stringValue]]) {
             continue;
         }
         
         MobeelizerErrors *error = [[MobeelizerErrors alloc] init];
-        [error addGlobalError:[[MobeelizerError alloc] initWithCode:NoCredentialsToPerformOperationOnField andArguments:[NSArray arrayWithObjects:@"update", field.name, nil]]];
+        [error addGlobalError:[[MobeelizerError alloc] initWithCode:NoCredentialsToPerformOperationOnField andArguments:@[@"update", field.name]]];
         return error;
     }
     
