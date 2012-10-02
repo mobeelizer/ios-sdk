@@ -215,7 +215,7 @@
 }
 
 - (void)waitUntilSyncRequestComplete:(NSString *)ticket returningError:(MobeelizerOperationError **)error {
-    for(int i = 0; i < 100; i++) {
+    for(int i = 0; i < 240; i++) {
         MobeelizerLog(@"Check task status: %@", ticket);
         
         int statusCode;
