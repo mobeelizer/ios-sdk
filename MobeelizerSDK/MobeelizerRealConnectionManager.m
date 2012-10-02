@@ -252,7 +252,7 @@
             return;
         }
         
-        [NSThread sleepForTimeInterval:pow(6.0, log(i+1.0))];
+        [NSThread sleepForTimeInterval:(0.1*i+0.5)];
     }
     
     return MobeelizerOperationError(MOBEELIZER_OPERATION_CODE_SYNC_REJECTED, @"Synchronization rejected with result: timeout.");
