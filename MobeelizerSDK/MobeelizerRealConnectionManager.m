@@ -82,7 +82,7 @@
     if (!networkConnected) {
         NSDictionary *roleAndInstanceGuid = [self.mobeelizer.internalDatabase getRoleAndInstanceGuidForInstance:self.instance andUser:self.user andPassword:self.password];
         
-        if (self.role == nil) {
+        if (roleAndInstanceGuid == nil) {
             MobeelizerLog(@"Login failure. Missing connection failure.");
             self.instance = nil;
             self.user = nil;
@@ -90,7 +90,7 @@
             
             MobeelizerOperationError(MOBEELIZER_OPERATION_CODE_MISSING_CONNECTION, @"Login failure. Internet connection required.")
         } else {
-            MobeelizerLog(@"Login with role '%@' from database successful.", self.role);
+            MobeelizerLog(@"Login with role '%@' from database successful.", roleAndInstanceGuid[@"role"]);
             self.role = roleAndInstanceGuid[@"role"];
             self.group = [self.role componentsSeparatedByString:@"-"][0];
             self.instanceGuid = roleAndInstanceGuid[@"instanceGuid"];
