@@ -48,7 +48,7 @@
 - (void)addValueFromJson:(NSDictionary *)json toObject:(id)object {
     NSString *value = [json valueForKey:self.name];    
     
-    if(value != nil) {
+    if(![value isKindOfClass:[NSNull class]]) {
         [object setValue:@([value intValue]) forKey:self.name];
     }
 }
